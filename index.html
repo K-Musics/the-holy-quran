@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>القرآن الكريم | The Holy Quran</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Amiri Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            background-color: #fdf6e3;
+            font-family: 'Amiri', serif;
+        }
+        
+        /* التنسيق الجديد للنص القرآني ليكون متصلاً ومرتباً */
+        .quran-text {
+            font-size: 32px;
+            line-height: 2.6;
+            text-align: justify;
+            text-align-last: center;
+            direction: rtl;
+            word-spacing: 2px;
+        }
+
+        /* حاوية الآية - تم تحويلها لـ inline لتسمح بانسياب النص */
+        .ayah-wrapper {
+            transition: background-color 0.3s ease;
+            border-radius: 4px;
+        }
+
+        /* تنسيق الأرقام الجديد لضمان توسيط الرقم داخل الدائرة بشكل مثالي */
+        .ayah-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #065f46;
+            margin: 0 4px;
+            position: relative;
+            font-family: Arial, sans-serif;
+            width: 38px;
+            height: 38px;
+        }
+        
+        .ayah-number::before {
+            content: "\06DD";
+            font-size: 44px;
+            position: absolute;
+            color: #047857;
+            opacity: 0.8;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* كلاس التظليل عند تشغيل الصوت */
+        .playing-active {
+            background-color: #a7f3d0 !important; /* لون أخضر مريح */
+            color: #064e3b;
+            box-shadow: 0 0 5px rgba(167, 243, 208, 0.5);
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #047857; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #064e3b; }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #047857;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .font-arabic {
+            font-family: 'Amiri', serif;
+        }
+    </style>
+</head>
+<body class="text-gray-800 h-screen flex flex-col overflow-hidden">
+
+    <!-- Header & Search -->
+    <header class="bg-emerald-800 text-amber-50 shadow-md p-4 flex flex-col md:flex-row justify-between items-center z-10 gap-4">
+        <div class="flex items-center gap-3 text-2xl font-bold w-full md:w-auto justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-book-quran"></i>
+                <h1 id="appTitle">القرآن الكريم</h1>
+            </div>
+            <!-- Language Settings -->
+            <div class="flex items-center gap-2 md:ms-6 bg-emerald-900 px-3 py-1 rounded-full text-sm">
+                <i class="fa-solid fa-globe"></i>
+                <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-transparent text-amber-50 outline-none cursor-pointer">
+                    <option value="ar" class="text-gray-800">العربية</option>
+                    <option value="en" class="text-gray-800">English</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 relative">
+            <input type="text" id="searchInput" placeholder="ابحث عن سورة (مثال: الفاتحة) أو آية..." 
+                class="w-full p-3 pe-10 rounded-full text-gray-800 bg-amber-50 border-2 border-emerald-600 focus:outline-none focus:border-amber-400 text-lg transition-colors shadow-inner">
+            <button onclick="performSearch()" class="absolute top-1/2 end-3 transform -translate-y-1/2 text-emerald-800 hover:text-emerald-600 bg-amber-50 rounded-full p-1">
+                <i class="fa-solid fa-search text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="flex flex-1 overflow-hidden">
+        
+        <!-- Sidebar (Surah Index) -->
+        <aside class="w-full md:w-1/4 lg:w-1/5 bg-emerald-50 border-e border-emerald-200 overflow-y-auto hidden md:block transition-all duration-300" id="sidebar">
+            <div class="p-4 bg-emerald-100 sticky top-0 font-bold text-emerald-900 border-b border-emerald-200 flex justify-between items-center z-10 shadow-sm">
+                <span id="indexTitle">السور</span>
+                <button class="md:hidden text-emerald-800" onclick="toggleSidebar()"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <ul id="surahList" class="p-2 space-y-1">
+                <div class="loader"></div>
+            </ul>
+        </aside>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" onclick="toggleSidebar()" class="md:hidden fixed bottom-6 end-6 bg-emerald-700 text-white p-4 rounded-full shadow-2xl z-50 hover:bg-emerald-800 transition-colors border-2 border-emerald-600">
+            <i class="fa-solid fa-list-ul text-xl"></i>
+        </button>
+
+        <!-- Reading and Results Area -->
+        <main class="w-full md:w-3/4 lg:w-4/5 p-4 md:p-8 overflow-y-auto relative bg-[#fdf6e3]" id="mainContent">
+            
+            <!-- Loading Screen -->
+            <div id="loadingScreen" class="hidden absolute inset-0 bg-[#fdf6e3]/90 flex flex-col items-center justify-center z-20">
+                <div class="loader"></div>
+                <p id="loadingText" class="text-emerald-800 text-xl font-bold mt-4">جاري التحميل...</p>
+            </div>
+
+            <!-- Reading Container -->
+            <div id="readingArea" class="max-w-4xl mx-auto bg-white p-6 md:p-12 shadow-xl rounded-2xl border border-emerald-100 min-h-full">
+                
+                <!-- Surah Header -->
+                <div class="text-center mb-6 border-b-2 border-emerald-800 pb-6 bg-emerald-50 rounded-xl p-4">
+                    <h2 id="surahTitle" class="text-4xl font-bold text-emerald-800 mb-2 font-arabic"></h2>
+                    <p id="surahType" class="text-emerald-600 text-lg font-bold"></p>
+                </div>
+
+                <!-- Audio Controls -->
+                <div class="flex flex-wrap justify-center gap-4 mb-10 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <button id="playBtn" onclick="toggleAudio()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-full flex items-center gap-2 transition shadow-md font-bold">
+                        <i class="fa-solid fa-play" id="playIcon"></i> <span id="playBtnText">تشغيل السورة</span>
+                    </button>
+                    <button onclick="stopAudio()" class="bg-rose-600 hover:bg-rose-700 text-white px-6 py-3 rounded-full flex items-center gap-2 transition shadow-md font-bold">
+                        <i class="fa-solid fa-stop"></i> <span id="stopBtnText">إيقاف</span>
+                    </button>
+                </div>
+                
+                <div id="bismillah" class="text-center text-3xl mb-10 text-emerald-800 font-bold hidden font-arabic">
+                    بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                </div>
+
+                <div id="quranText" class="quran-text">
+                    <!-- Ayahs will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Search Results Container -->
+            <div id="searchResultsArea" class="max-w-4xl mx-auto hidden bg-white p-6 md:p-8 shadow-xl rounded-2xl border border-emerald-100 min-h-[50vh]">
+                <div class="flex justify-between items-center mb-6 border-b-2 border-emerald-800 pb-4">
+                    <h2 id="searchResultsTitle" class="text-2xl font-bold text-emerald-800">نتائج البحث</h2>
+                    <button onclick="closeSearch()" class="text-rose-600 hover:text-rose-800 font-bold flex items-center gap-2 bg-rose-50 px-4 py-2 rounded-lg">
+                        <i class="fa-solid fa-times"></i> <span id="closeSearchText">إغلاق</span>
+                    </button>
+                </div>
+                <div id="searchResultsList" class="space-y-4">
+                    <!-- Results will appear here -->
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://api.alquran.cloud/v1';
+        
+        // Dictionary for Multi-language support
+        const i18n = {
+            ar: {
+                title: "القرآن الكريم",
+                searchPlaceholder: "ابحث عن سورة (مثال: الفاتحة) أو آية...",
+                indexTitle: "السور",
+                loading: "جاري التحميل...",
+                play: "تشغيل القارئ (العفاسي)",
+                pause: "إيقاف مؤقت",
+                stop: "إيقاف",
+                closeSearch: "إغلاق البحث",
+                meccan: "سورة مكية",
+                medinan: "سورة مدنية",
+                ayahsCount: "آياتها",
+                searchResultsFor: "نتائج البحث عن",
+                noResults: "لم يتم العثور على نتائج. تأكد من الكلمة وحاول مرة أخرى.",
+                errorLoading: "حدث خطأ. يرجى التأكد من اتصالك بالإنترنت.",
+                surahMatch: "نتيجة مطابقة لاسم السورة",
+                openSurah: "فتح السورة"
+            },
+            en: {
+                title: "The Holy Quran",
+                searchPlaceholder: "Search Surah (e.g. Fatiha) or Ayah...",
+                indexTitle: "Surah Index",
+                loading: "Loading...",
+                play: "Play Audio (Alafasy)",
+                pause: "Pause",
+                stop: "Stop",
+                closeSearch: "Close Search",
+                meccan: "Meccan Surah",
+                medinan: "Medinan Surah",
+                ayahsCount: "Ayahs",
+                searchResultsFor: "Search Results for",
+                noResults: "No results found. Please try a different keyword.",
+                errorLoading: "Network error. Please check your connection.",
+                surahMatch: "Surah Name Match",
+                openSurah: "Open Surah"
+            }
+        };
+
+        // State variables
+        let currentLang = 'ar';
+        let surahsMetaData = [];
+        let currentSurahData = null;
+        
+        // Audio state
+        let audioPlayer = new Audio();
+        let audioList = [];
+        let currentAudioIndex = 0;
+        let isPlaying = false;
+
+        // DOM Elements
+        const elements = {
+            appTitle: document.getElementById('appTitle'),
+            searchInput: document.getElementById('searchInput'),
+            indexTitle: document.getElementById('indexTitle'),
+            loadingText: document.getElementById('loadingText'),
+            playBtnText: document.getElementById('playBtnText'),
+            stopBtnText: document.getElementById('stopBtnText'),
+            closeSearchText: document.getElementById('closeSearchText'),
+            surahList: document.getElementById('surahList'),
+            quranText: document.getElementById('quranText'),
+            surahTitle: document.getElementById('surahTitle'),
+            surahType: document.getElementById('surahType'),
+            bismillah: document.getElementById('bismillah'),
+            readingArea: document.getElementById('readingArea'),
+            searchResultsArea: document.getElementById('searchResultsArea'),
+            searchResultsList: document.getElementById('searchResultsList'),
+            searchResultsTitle: document.getElementById('searchResultsTitle'),
+            loadingScreen: document.getElementById('loadingScreen'),
+            sidebar: document.getElementById('sidebar'),
+            playIcon: document.getElementById('playIcon'),
+            langSelect: document.getElementById('langSelect')
+        };
+
+        // --- CORE FUNCTIONS ---
+
+        window.onload = () => {
+            const savedLang = localStorage.getItem('quranLang');
+            if(savedLang) {
+                elements.langSelect.value = savedLang;
+                changeLanguage(savedLang);
+            } else {
+                fetchSurahList(); 
+            }
+            
+            audioPlayer.addEventListener('ended', playNextAyah);
+            audioPlayer.addEventListener('error', () => {
+                console.error("Audio Load Error. Skipping to next.");
+                playNextAyah();
+            });
+        };
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('quranLang', lang);
+            
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = lang;
+            
+            elements.appTitle.textContent = i18n[lang].title;
+            elements.searchInput.placeholder = i18n[lang].searchPlaceholder;
+            elements.indexTitle.textContent = i18n[lang].indexTitle;
+            elements.loadingText.textContent = i18n[lang].loading;
+            updatePlayButtonUI();
+            elements.stopBtnText.textContent = i18n[lang].stop;
+            elements.closeSearchText.textContent = i18n[lang].closeSearch;
+
+            stopAudio();
+
+            if(surahsMetaData.length === 0) {
+                fetchSurahList();
+            } else {
+                renderSurahList(surahsMetaData);
+                if(currentSurahData) renderCurrentSurah();
+            }
+        }
+
+        async function fetchSurahList() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/meta`);
+                const data = await response.json();
+                if(data.code === 200) {
+                    surahsMetaData = data.data.surahs.references;
+                    renderSurahList(surahsMetaData);
+                    loadSurah(1); 
+                }
+            } catch (error) {
+                elements.surahList.innerHTML = `<li class="text-red-500 p-4 font-bold">${i18n[currentLang].errorLoading}</li>`;
+            }
+        }
+
+        function localizeNumber(num) {
+            if (currentLang === 'en') return num;
+            const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+            return String(num).replace(/[0-9]/g, w => arabicNumbers[+w]);
+        }
+
+        function renderSurahList(surahs) {
+            elements.surahList.innerHTML = '';
+            surahs.forEach(surah => {
+                const name = currentLang === 'ar' ? surah.name : surah.englishName;
+                const li = document.createElement('li');
+                li.className = 'p-3 hover:bg-emerald-200 cursor-pointer rounded-lg transition-colors flex justify-between items-center text-lg font-bold text-emerald-900 mb-1 border border-transparent hover:border-emerald-300';
+                li.innerHTML = `
+                    <span class="font-arabic">${name}</span>
+                    <span class="text-sm bg-emerald-700 text-white rounded-full w-8 h-8 flex items-center justify-center shadow">${localizeNumber(surah.number)}</span>
+                `;
+                li.onclick = () => {
+                    loadSurah(surah.number);
+                    if(window.innerWidth < 768) toggleSidebar(); 
+                };
+                elements.surahList.appendChild(li);
+            });
+        }
+
+        async function loadSurah(surahNumber) {
+            toggleLoading(true);
+            stopAudio();
+            closeSearch();
+
+            try {
+                // Fetch Arabic, English Translation, and Audio
+                const response = await fetch(`${API_BASE_URL}/surah/${surahNumber}/editions/quran-uthmani,en.sahih,ar.alafasy`);
+                const data = await response.json();
+                
+                if(data.code === 200) {
+                    currentSurahData = {
+                        ar: data.data[0],
+                        en: data.data[1],
+                        audio: data.data[2]
+                    };
+                    renderCurrentSurah();
+                }
+            } catch (error) {
+                elements.quranText.innerHTML = `<div class="p-4 bg-red-100 text-red-700 rounded-xl font-bold">${i18n[currentLang].errorLoading}</div>`;
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        function renderCurrentSurah() {
+            if(!currentSurahData) return;
+
+            const arSurah = currentSurahData.ar;
+            const enSurah = currentSurahData.en;
+            
+            const name = currentLang === 'ar' ? arSurah.name : enSurah.englishName;
+            elements.surahTitle.textContent = name;
+            
+            const typeText = arSurah.revelationType === 'Meccan' ? i18n[currentLang].meccan : i18n[currentLang].medinan;
+            elements.surahType.textContent = `${typeText} - ${i18n[currentLang].ayahsCount} ${localizeNumber(arSurah.numberOfAyahs)}`;
+            
+            if (arSurah.number !== 1 && arSurah.number !== 9) {
+                elements.bismillah.style.display = 'block';
+            } else {
+                elements.bismillah.style.display = 'none';
+            }
+
+            audioList = currentSurahData.audio.ayahs.map(a => a.audio);
+
+            let textHtml = '';
+            for (let i = 0; i < arSurah.ayahs.length; i++) {
+                let arText = arSurah.ayahs[i].text;
+                let enText = enSurah.ayahs[i].text;
+                
+                if (arSurah.number !== 1 && i === 0) {
+                    arText = arText.replace(/^بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ /, '');
+                }
+
+                if (currentLang === 'ar') {
+                    // التنسيق المعدل ليظهر النصر متصلاً دون تكسير الأسطر بشكل خاطئ
+                    textHtml += `<span id="ayah-${i}" class="ayah-wrapper px-1">${arText} <span class="ayah-number font-sans">${localizeNumber(i + 1)}</span></span> `;
+                } else {
+                    textHtml += `
+                        <div id="ayah-${i}" class="ayah-wrapper p-6 mb-4 bg-emerald-50/50 rounded-xl border border-emerald-100 transition-colors duration-300">
+                            <div class="text-right mb-4 text-3xl font-arabic text-emerald-900" dir="rtl">
+                                ${arText} <span class="ayah-number">${localizeNumber(i + 1)}</span>
+                            </div>
+                            <div class="text-left text-xl text-gray-700 font-sans leading-relaxed" dir="ltr">
+                                ${enText}
+                            </div>
+                        </div>`;
+                }
+            }
+
+            elements.quranText.innerHTML = textHtml;
+            document.getElementById('mainContent').scrollTop = 0;
+        }
+
+        // --- AUDIO ---
+        function toggleAudio() {
+            if (audioList.length === 0) return;
+            if (isPlaying) {
+                audioPlayer.pause();
+                isPlaying = false;
+                updatePlayButtonUI();
+            } else {
+                playAyah(currentAudioIndex);
+            }
+        }
+
+        function playAyah(index) {
+            if (index >= audioList.length) {
+                stopAudio();
+                return;
+            }
+            audioPlayer.src = audioList[index];
+            audioPlayer.play();
+            isPlaying = true;
+            currentAudioIndex = index;
+            updatePlayButtonUI();
+            highlightAyah(index);
+        }
+
+        function playNextAyah() { playAyah(currentAudioIndex + 1); }
+
+        function stopAudio() {
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            isPlaying = false;
+            currentAudioIndex = 0;
+            updatePlayButtonUI();
+            highlightAyah(-1); 
+        }
+
+        function updatePlayButtonUI() {
+            if (isPlaying) {
+                elements.playIcon.className = "fa-solid fa-pause";
+                elements.playBtnText.textContent = i18n[currentLang].pause;
+            } else {
+                elements.playIcon.className = "fa-solid fa-play";
+                elements.playBtnText.textContent = i18n[currentLang].play;
+            }
+        }
+
+        function highlightAyah(index) {
+            document.querySelectorAll('.ayah-wrapper').forEach(el => {
+                el.classList.remove('playing-active');
+            });
+
+            if (index >= 0) {
+                const activeEl = document.getElementById(`ayah-${index}`);
+                if (activeEl) {
+                    activeEl.classList.add('playing-active');
+                    activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+
+        // --- التحديث الجديد لمحرك البحث ليكون مقاوماً للتشكيل والمسافات ---
+        function normalizeSearchText(text) {
+            if (!text) return '';
+            return text
+                .replace(/[\u0600-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/g, '') // حذف كل التشكيل
+                .replace(/[أإآٱ]/g, 'ا') // توحيد جميع أشكال حرف الألف
+                .replace(/ة/g, 'ه')      // توحيد التاء المربوطة
+                .replace(/[ىي]/g, 'ي')    // توحيد الياء
+                .replace(/(سوره|سورة)/g, '') // حذف كلمة سورة أينما وجدت
+                .replace(/\s+/g, '') // إزالة كل المسافات لضمان التطابق التام
+                .toLowerCase();
+        }
+
+        async function performSearch() {
+            const rawQuery = elements.searchInput.value.trim();
+            if (!rawQuery) return;
+
+            toggleLoading(true);
+            elements.readingArea.style.display = 'none';
+            elements.searchResultsArea.style.display = 'block';
+            elements.searchResultsList.innerHTML = '';
+            
+            elements.searchResultsTitle.innerHTML = `${i18n[currentLang].searchResultsFor}: "<span class="text-amber-600">${rawQuery}</span>"`;
+
+            try {
+                const normalizedQuery = normalizeSearchText(rawQuery);
+                
+                // 1. البحث القوي في أسماء السور
+                const matchedSurahs = surahsMetaData.filter(s => {
+                    const normArName = normalizeSearchText(s.name);
+                    const normEnName = normalizeSearchText(s.englishName);
+                    return normArName.includes(normalizedQuery) || normEnName.includes(normalizedQuery);
+                });
+
+                if (matchedSurahs.length > 0) {
+                    matchedSurahs.forEach(surah => {
+                        const name = currentLang === 'ar' ? surah.name : surah.englishName;
+                        const div = document.createElement('div');
+                        div.className = 'bg-emerald-50 p-6 rounded-xl shadow border-2 border-emerald-500 hover:bg-emerald-100 transition-colors cursor-pointer mb-4 flex justify-between items-center';
+                        div.innerHTML = `
+                            <div>
+                                <div class="text-sm font-bold text-emerald-700 mb-2"><i class="fa-solid fa-star text-amber-500 mx-1"></i> ${i18n[currentLang].surahMatch}</div>
+                                <div class="text-3xl font-bold font-arabic text-emerald-900">${name}</div>
+                            </div>
+                            <button class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold shadow-sm hover:bg-emerald-700 flex items-center gap-2">
+                                ${i18n[currentLang].openSurah} <i class="fa-solid fa-arrow-left mt-1"></i>
+                            </button>
+                        `;
+                        div.onclick = () => {
+                            elements.searchInput.value = '';
+                            loadSurah(surah.number);
+                        };
+                        elements.searchResultsList.appendChild(div);
+                    });
+                }
+
+                // 2. البحث في الآيات
+                const searchEdition = currentLang === 'ar' ? 'ar.quran' : 'en.sahih';
+                const response = await fetch(`${API_BASE_URL}/search/${encodeURIComponent(rawQuery)}/all/${searchEdition}`);
+                const data = await response.json();
+                
+                if (data.code === 200 && data.data.count > 0) {
+                    data.data.matches.forEach(match => {
+                        const surahName = currentLang === 'ar' ? match.surah.name : match.surah.englishName;
+                        
+                        const regex = new RegExp(rawQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                        const highlightedText = match.text.replace(regex, `<span class="bg-amber-300 text-amber-900 font-bold px-1 rounded shadow-sm">$&</span>`);
+                        
+                        const div = document.createElement('div');
+                        div.className = 'bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer border-s-4 border-s-emerald-400 mt-4';
+                        div.innerHTML = `
+                            <div class="flex justify-between items-center mb-4 text-emerald-700 text-sm border-b pb-3">
+                                <span class="font-bold flex items-center text-lg font-arabic">
+                                    <i class="fa-solid fa-book-open mx-2"></i> ${surahName}
+                                </span>
+                                <span class="bg-gray-100 px-3 py-1 rounded-full">${i18n[currentLang].ayahsCount} ${localizeNumber(match.numberInSurah)}</span>
+                            </div>
+                            <div class="${currentLang === 'ar' ? 'quran-text text-right' : 'text-xl text-left font-sans'} mt-2" dir="${currentLang === 'ar' ? 'rtl' : 'ltr'}">
+                                ${highlightedText} <span class="ayah-number">${localizeNumber(match.numberInSurah)}</span>
+                            </div>
+                        `;
+                        div.onclick = () => {
+                            elements.searchInput.value = '';
+                            loadSurah(match.surah.number);
+                        };
+                        elements.searchResultsList.appendChild(div);
+                    });
+                } else if (matchedSurahs.length === 0) {
+                    elements.searchResultsList.innerHTML = `
+                    <div class="flex flex-col items-center justify-center p-12 text-gray-400">
+                        <i class="fa-solid fa-magnifying-glass text-6xl mb-4 text-gray-300"></i>
+                        <p class="text-xl font-bold text-gray-500">${i18n[currentLang].noResults}</p>
+                    </div>`;
+                }
+            } catch (error) {
+                elements.searchResultsList.innerHTML = `<div class="p-6 bg-red-50 text-red-600 rounded-xl font-bold text-center border border-red-200"><i class="fa-solid fa-triangle-exclamation mx-2"></i> ${i18n[currentLang].errorLoading}</div>`;
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        function closeSearch() {
+            elements.searchResultsArea.style.display = 'none';
+            elements.readingArea.style.display = 'block';
+            elements.searchInput.value = '';
+        }
+
+        function toggleLoading(show) {
+            elements.loadingScreen.style.display = show ? 'flex' : 'none';
+        }
+
+        function toggleSidebar() {
+            if(elements.sidebar.classList.contains('hidden')) {
+                elements.sidebar.classList.remove('hidden');
+                elements.sidebar.classList.add('fixed', 'inset-y-0', 'right-0', 'z-40', 'w-4/5', 'max-w-sm', 'shadow-2xl');
+            } else {
+                elements.sidebar.classList.add('hidden');
+                elements.sidebar.classList.remove('fixed', 'inset-y-0', 'right-0', 'z-40', 'w-4/5', 'max-w-sm', 'shadow-2xl');
+            }
+        }
+
+        elements.searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') performSearch();
+        });
+
+    </script>
+</body>
+</html>
