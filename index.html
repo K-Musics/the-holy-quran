@@ -2,106 +2,152 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>القرآن الكريم | The Holy Quran</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="no-referrer">
+    <title>تراث الشيعة | Shia's Legacy</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Amiri Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         body {
-            background-color: #111827; /* Dark Gray 900 */
-            font-family: 'Amiri', serif;
-            color: #e5e7eb; /* Gray 200 */
+            background-color: #0f172a; /* Slate 900 */
+            font-family: 'Tajawal', sans-serif;
+            color: #e2e8f0; 
+            -webkit-tap-highlight-color: transparent;
+            transition: font-size 0.3s ease;
         }
         
+        /* Platform Specific Scaling */
+        body.platform-tv { font-size: 140%; }
+        body.platform-tv .quran-text { font-size: 55px; line-height: 2.6; }
+        body.platform-tv .service-icon-wrapper { width: 100px; height: 100px; font-size: 45px; }
+        body.platform-tv #bottomPlayer { padding: 25px; }
+        body.platform-tv #surahTitle { font-size: 3rem; }
+        
+        body.platform-laptop .quran-text { font-size: 38px; line-height: 2.6; word-spacing: 2px; }
+        
+        body.platform-mobile .quran-text { font-size: 28px; line-height: 2.3; word-spacing: 1px; }
+
+        @keyframes pulseGold {
+            0%, 100% { filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.4)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 25px rgba(251, 191, 36, 0.7)); transform: scale(1.05); }
+        }
+        .animate-pulse-gold { animation: pulseGold 4s infinite ease-in-out; }
+
+        /* Ambient Background Animations */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob { animation: blob 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+
         .quran-text {
-            font-size: 32px;
-            line-height: 2.8;
             text-align: justify;
             text-align-last: center;
             direction: rtl;
-            word-spacing: 2px;
-            color: #f3f4f6; /* Lighter text for dark mode */
+            color: #f8fafc;
+            user-select: none; 
+            font-family: 'Amiri', serif;
         }
 
         .ayah-wrapper {
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            border-radius: 6px;
-            padding: 2px 4px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 4px 8px;
+            cursor: pointer;
         }
 
         .ayah-number {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            color: #22d3ee; /* Cyan 400 */
+            font-size: 16px;
+            color: #fbbf24; /* Amber 400 */
             margin: 0 4px;
             position: relative;
             font-family: Arial, sans-serif;
-            width: 38px;
-            height: 38px;
+            width: 34px;
+            height: 34px;
+            font-weight: bold;
         }
         
         .ayah-number::before {
             content: "\06DD";
-            font-size: 44px;
+            font-size: 42px;
             position: absolute;
-            color: #0891b2; /* Cyan 600 */
-            opacity: 0.8;
+            color: #d97706; /* Amber 600 */
+            opacity: 0.6;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            font-weight: normal;
         }
+
+        body.platform-tv .ayah-number { font-size: 24px; width: 50px; height: 50px; }
+        body.platform-tv .ayah-number::before { font-size: 65px; }
 
         .playing-active {
-            background-color: rgba(8, 145, 178, 0.3) !important; /* Cyan transparent */
-            color: #cffafe; /* Cyan 50 */
-            box-shadow: 0 0 10px rgba(34, 211, 238, 0.2);
+            background-color: rgba(245, 158, 11, 0.15) !important;
+            color: #fef3c7;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .context-active {
+            background-color: rgba(225, 29, 72, 0.15) !important; 
+            box-shadow: 0 0 15px rgba(225, 29, 72, 0.2);
+            border: 1px solid rgba(225, 29, 72, 0.3);
         }
 
-        /* تصميم فاصل الصفحات للوضع الليلي */
         .page-divider {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 60px 0;
+            margin: 50px 0;
             position: relative;
             width: 100%;
         }
         .page-divider::before, .page-divider::after {
             content: "";
             flex: 1;
-            height: 2px;
-            background: linear-gradient(to left, transparent, #4b5563, transparent); /* Gray 600 */
+            height: 1px;
+            background: linear-gradient(to left, transparent, #fbbf24, transparent);
+            opacity: 0.5;
         }
         .page-label {
-            background: #1f2937; /* Gray 800 */
-            color: #22d3ee; /* Cyan 400 */
-            padding: 8px 30px;
+            background: #1e293b;
+            color: #fbbf24;
+            padding: 8px 24px;
             border-radius: 50px;
-            font-size: 18px;
+            font-size: 15px;
             font-weight: bold;
-            margin: 0 25px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            border: 2px solid #0891b2; /* Cyan 600 */
+            margin: 0 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            border: 1px solid #b45309;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            font-family: 'Tajawal', sans-serif;
         }
 
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1f2937; } /* Gray 800 */
-        ::-webkit-scrollbar-thumb { background: #0891b2; border-radius: 4px; } /* Cyan 600 */
-        ::-webkit-scrollbar-thumb:hover { background: #0e7490; } /* Cyan 700 */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b45309; }
 
         .loader {
-            border: 4px solid #374151; /* Gray 700 */
-            border-top: 4px solid #06b6d4; /* Cyan 500 */
+            border: 3px solid #334155;
+            border-top: 3px solid #fbbf24;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -109,109 +155,588 @@
             margin: 20px auto;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .font-arabic { font-family: 'Amiri', serif; }
+        .font-sans-ar { font-family: 'Tajawal', sans-serif; }
         
         .btn-disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed !important;
             filter: grayscale(1);
         }
+        
+        input[type=range] { accent-color: #fbbf24; }
+
+        /* Custom Cards */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(251, 191, 36, 0.15);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 25px 20px;
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.05);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
+            transform: skewX(-20deg);
+            transition: all 0.5s ease;
+        }
+        .service-card:hover::before {
+            left: 150%;
+        }
+        .service-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(251, 191, 36, 0.4);
+            box-shadow: 0 15px 35px -10px rgba(251, 191, 36, 0.25);
+        }
+        .service-icon-wrapper {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .service-card:hover .service-icon-wrapper { transform: scale(1.15) rotate(8deg); }
+        .service-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #f1f5f9;
+            font-family: 'Tajawal', sans-serif;
+            line-height: 1.3;
+        }
+
+        /* Ambient Glow effect for main container */
+        .ambient-glow {
+            position: relative;
+        }
+        .ambient-glow::after {
+            content: '';
+            position: absolute;
+            top: -20px; left: -20px; right: -20px; bottom: -20px;
+            background: radial-gradient(circle, rgba(251,191,36,0.05) 0%, transparent 70%);
+            z-index: -1;
+            border-radius: inherit;
+            pointer-events: none;
+        }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden text-gray-200 bg-gray-900">
+<body class="h-screen flex flex-col overflow-hidden text-slate-200 bg-slate-900 selection:bg-amber-900 selection:text-amber-100 platform-mobile relative">
 
-    <!-- Header & Search -->
-    <header class="bg-cyan-950 text-cyan-50 shadow-lg p-4 flex flex-col md:flex-row justify-between items-center z-10 gap-4 border-b border-cyan-900">
-        <div class="flex items-center gap-3 text-2xl font-bold w-full md:w-auto justify-between flex-wrap">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-book-quran text-cyan-400"></i>
-                <h1 id="appTitle">القرآن الكريم</h1>
+    <!-- Ambient Animated Background -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none overflow-hidden opacity-60">
+        <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-amber-600/20 rounded-full mix-blend-screen filter blur-[120px] animate-blob"></div>
+        <div class="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] bg-rose-600/10 rounded-full mix-blend-screen filter blur-[120px] animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] bg-purple-900/20 rounded-full mix-blend-screen filter blur-[150px] animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- Start / Welcome Screen -->
+    <div id="welcomeScreen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900/95 to-slate-900 backdrop-blur-md text-slate-50 transition-all duration-700 ease-in-out px-4 text-center">
+        
+        <!-- Shia's Legacy Text Logo for Welcome Screen -->
+        <div class="mb-10 animate-pulse-gold flex flex-col items-center text-amber-400">
+            <span style="font-family: 'DecoType Thuluth', 'Thuluth', 'Amiri', serif; font-size: 5.5rem; font-weight: 700; line-height: 1.1; text-shadow: 0 4px 25px rgba(251,191,36,0.4);">تراث الشيعة</span>
+            <span class="text-sm md:text-lg tracking-[0.4em] uppercase font-sans mt-3 opacity-90 font-bold text-amber-200">Shia's Legacy</span>
+        </div>
+        
+        <!-- Step 0: Platform Selection -->
+        <div id="welcomeStepPlatform" class="w-full max-w-4xl relative z-10 flex flex-col items-center transition-all duration-500">
+            <h3 class="text-2xl md:text-3xl text-slate-200 font-bold mb-10 font-sans-ar text-center drop-shadow-md">
+                أين تستخدم التطبيق؟<br>
+                <span class="text-lg md:text-xl font-sans text-slate-400 mt-3 block font-medium">Where are you using the app?</span>
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 w-full px-4">
+                <!-- Mobile -->
+                <button onclick="selectPlatform('mobile')" class="bg-slate-800/60 backdrop-blur-lg border border-slate-700 hover:border-amber-400 hover:bg-slate-800/90 p-8 rounded-[2rem] flex flex-col items-center gap-5 transition-all hover:-translate-y-3 shadow-2xl group">
+                    <div class="w-20 h-20 rounded-full bg-slate-900/50 flex items-center justify-center group-hover:bg-amber-500/10 transition-colors">
+                        <i class="fa-solid fa-mobile-screen-button text-4xl text-slate-300 group-hover:text-amber-400 transition-colors"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-bold text-2xl font-sans text-white">Mobile</span>
+                        <span class="font-medium text-lg font-sans-ar text-amber-500 mt-1">هاتف محمول</span>
+                    </div>
+                </button>
+                
+                <!-- Laptop -->
+                <button onclick="selectPlatform('laptop')" class="bg-slate-800/60 backdrop-blur-lg border border-slate-700 hover:border-amber-400 hover:bg-slate-800/90 p-8 rounded-[2rem] flex flex-col items-center gap-5 transition-all hover:-translate-y-3 shadow-2xl group">
+                    <div class="w-20 h-20 rounded-full bg-slate-900/50 flex items-center justify-center group-hover:bg-amber-500/10 transition-colors">
+                        <i class="fa-solid fa-laptop text-4xl text-slate-300 group-hover:text-amber-400 transition-colors"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-bold text-2xl font-sans text-white">Laptop</span>
+                        <span class="font-medium text-lg font-sans-ar text-amber-500 mt-1">حاسوب</span>
+                    </div>
+                </button>
+                
+                <!-- TV -->
+                <button onclick="selectPlatform('tv')" class="bg-slate-800/60 backdrop-blur-lg border border-slate-700 hover:border-amber-400 hover:bg-slate-800/90 p-8 rounded-[2rem] flex flex-col items-center gap-5 transition-all hover:-translate-y-3 shadow-2xl group">
+                    <div class="w-20 h-20 rounded-full bg-slate-900/50 flex items-center justify-center group-hover:bg-amber-500/10 transition-colors">
+                        <i class="fa-solid fa-tv text-4xl text-slate-300 group-hover:text-amber-400 transition-colors"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-bold text-2xl font-sans text-white">Smart TV</span>
+                        <span class="font-medium text-lg font-sans-ar text-amber-500 mt-1">تلفاز ذكي</span>
+                    </div>
+                </button>
             </div>
-            <div class="flex items-center gap-2 mt-2 md:mt-0">
-                <div class="flex items-center gap-1 md:gap-2 md:ms-6 bg-cyan-900 px-3 py-1 rounded-full text-sm">
-                    <i class="fa-solid fa-globe hidden md:inline-block text-cyan-300"></i>
-                    <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-transparent text-cyan-50 outline-none cursor-pointer">
-                        <option value="ar" class="text-gray-900">العربية</option>
-                        <option value="en" class="text-gray-900">English</option>
+        </div>
+
+        <!-- Step 1: Language Selection (Hidden initially) -->
+        <div id="welcomeStepLang" class="hidden flex-col items-center gap-10 w-full max-w-md relative z-10 transition-all duration-500 opacity-0 translate-y-8">
+            <h3 class="text-2xl md:text-3xl text-slate-200 font-bold text-center drop-shadow-md">
+                <span class="font-sans">Choose your language</span><br>
+                <span class="font-sans-ar mt-3 block text-amber-400">اختر لغتك المفضلة</span>
+            </h3>
+            <div class="flex flex-col sm:flex-row gap-5 w-full px-4">
+                <button onclick="startApp('en')" class="flex-1 bg-slate-800/80 hover:bg-amber-500 border border-slate-600 hover:border-amber-400 text-slate-200 hover:text-slate-900 px-8 py-5 rounded-2xl text-xl font-bold transition-all shadow-xl font-sans">English</button>
+                <button onclick="startApp('ar')" class="flex-1 bg-slate-800/80 hover:bg-amber-500 border border-slate-600 hover:border-amber-400 text-slate-200 hover:text-slate-900 px-8 py-5 rounded-2xl text-xl font-bold transition-all shadow-xl font-sans-ar">العربية</button>
+            </div>
+        </div>
+
+        <div class="absolute bottom-6 w-full text-center text-sm text-slate-500 font-sans tracking-widest font-medium">
+            Developed by Karim X Gemini <i class="fa-solid fa-heart text-amber-600 animate-pulse ms-1"></i>
+        </div>
+    </div>
+
+    <!-- Main App Content -->
+    <!-- Header & Search -->
+    <header class="glass-panel text-slate-50 shadow-xl p-3 md:p-4 flex flex-col md:flex-row justify-between items-center z-10 gap-4 shrink-0 relative rounded-b-[2rem] md:rounded-b-none border-t-0 border-x-0 border-b border-amber-500/20 md:border-b-0">
+        <div class="flex justify-between items-center w-full md:w-auto gap-3">
+            <div class="flex items-center gap-3 text-xl md:text-2xl font-bold">
+                <button class="md:hidden text-amber-500 hover:text-amber-400 transition-colors p-2.5 bg-slate-800/80 rounded-xl shadow-md border border-slate-700/50" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                
+                <!-- Shia's Legacy Text Logo for Header -->
+                <div onclick="closeServices()" class="flex flex-col items-center cursor-pointer transition-transform hover:scale-105 text-amber-400 ms-2" style="line-height: 1;">
+                    <span style="font-family: 'DecoType Thuluth', 'Thuluth', 'Amiri', serif; font-size: 2.2rem; font-weight: 700; text-shadow: 0 2px 10px rgba(251,191,36,0.3);">تراث الشيعة</span>
+                </div>
+                
+                <!-- App Title Hidden element for translation bindings -->
+                <h1 id="appTitle" class="hidden">تراث الشيعة</h1>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-3">
+                <!-- Services/Hub Button Desktop -->
+                <button onclick="toggleServices()" id="servicesBtnDesktop" class="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 px-6 py-2.5 rounded-xl text-sm font-bold text-slate-900 transition-all shadow-lg shadow-amber-900/20">
+                    <i class="fa-solid fa-layer-group"></i> <span id="servicesTextDesktop" class="font-sans-ar">المكتبة والمراجع</span>
+                </button>
+                <div class="flex items-center gap-2 bg-slate-900/60 px-4 py-2 rounded-xl text-sm border border-slate-700 hover:border-amber-500/50 transition-colors shadow-inner">
+                    <i class="fa-solid fa-globe text-amber-500"></i>
+                    <select id="langSelectDesktop" onchange="changeLanguage(this.value)" class="bg-transparent text-slate-200 outline-none cursor-pointer font-sans font-medium">
+                        <option value="ar" class="text-slate-900">العربية</option>
+                        <option value="en" class="text-slate-900">English</option>
                     </select>
                 </div>
-                <div class="flex items-center gap-1 md:gap-2 bg-cyan-900 px-3 py-1 rounded-full text-sm">
-                    <i class="fa-solid fa-user-tie hidden md:inline-block text-cyan-300"></i>
-                    <select id="reciterSelect" onchange="changeReciter(this.value)" class="bg-transparent text-cyan-50 outline-none cursor-pointer max-w-[110px] md:max-w-[160px] truncate">
-                        <option value="ar.alafasy" class="text-gray-900">العفاسي</option>
-                        <option value="ar.abdulbasitmujawwad" class="text-gray-900">عبد الباسط (مجود)</option>
-                        <option value="ar.abdulbasitmurattal" class="text-gray-900">عبد الباسط (مرتل)</option>
-                        <option value="ar.husary" class="text-gray-900">الحصري</option>
+                <div class="flex items-center gap-2 bg-slate-900/60 px-4 py-2 rounded-xl text-sm border border-slate-700 hover:border-amber-500/50 transition-colors shadow-inner">
+                    <i class="fa-solid fa-user-tie text-amber-500"></i>
+                    <select id="reciterSelectDesktop" onchange="changeReciter(this.value)" class="bg-transparent text-slate-200 outline-none cursor-pointer max-w-[150px] truncate font-sans-ar font-medium">
+                        <option value="ar.alafasy" class="text-slate-900">العفاسي</option>
+                        <option value="ar.abdulbasitmujawwad" class="text-slate-900">عبد الباسط (مجود)</option>
+                        <option value="ar.abdulbasitmurattal" class="text-slate-900">عبد الباسط (مرتل)</option>
+                        <option value="ar.husary" class="text-slate-900">الحصري</option>
                     </select>
                 </div>
+                <!-- Full Screen Toggle Button -->
+                <button onclick="toggleFullScreen()" class="hidden md:flex items-center justify-center gap-2 bg-slate-900/60 w-10 h-10 rounded-xl text-sm border border-slate-700 hover:border-amber-500/50 transition-colors shadow-inner outline-none" title="تكبير الشاشة">
+                    <i class="fa-solid fa-expand text-amber-500" id="fsIcon"></i>
+                </button>
             </div>
         </div>
         
-        <div class="w-full md:w-1/2 relative">
-            <input type="text" id="searchInput" placeholder="ابحث عن سورة (مثال: الفاتحة) أو آية..." 
-                class="w-full p-3 pe-10 rounded-full bg-gray-800 border-2 border-cyan-800 text-gray-100 placeholder-gray-400 focus:outline-none focus:border-cyan-400 text-lg transition-colors shadow-inner">
-            <button onclick="performSearch()" class="absolute top-1/2 end-3 transform -translate-y-1/2 text-cyan-400 hover:text-cyan-300 bg-gray-800 rounded-full p-1">
-                <i class="fa-solid fa-search text-xl"></i>
-            </button>
+        <div class="w-full flex flex-col md:flex-row gap-3 md:w-1/2 md:pe-4">
+            <div class="md:hidden flex items-center justify-between w-full">
+                <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1 w-full">
+                    <!-- Services/Hub Button Mobile -->
+                    <button onclick="toggleServices()" id="servicesBtnMobile" class="flex items-center gap-1.5 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 px-4 py-2 rounded-xl text-sm font-bold text-slate-900 transition-colors whitespace-nowrap shrink-0 shadow-md">
+                        <i class="fa-solid fa-layer-group"></i> <span id="servicesTextMobile" class="font-sans-ar">المكتبة</span>
+                    </button>
+                    <div class="flex items-center gap-1.5 bg-slate-900/60 px-3 py-2 rounded-xl text-sm border border-slate-700 whitespace-nowrap shrink-0">
+                        <i class="fa-solid fa-globe text-amber-500"></i>
+                        <select id="langSelectMobile" onchange="changeLanguage(this.value)" class="bg-transparent text-slate-200 outline-none cursor-pointer text-sm font-sans font-medium">
+                            <option value="ar" class="text-slate-900">العربية</option>
+                            <option value="en" class="text-slate-900">English</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-1.5 bg-slate-900/60 px-3 py-2 rounded-xl text-sm border border-slate-700 whitespace-nowrap shrink-0">
+                        <i class="fa-solid fa-user-tie text-amber-500"></i>
+                        <select id="reciterSelectMobile" onchange="changeReciter(this.value)" class="bg-transparent text-slate-200 outline-none cursor-pointer text-sm font-sans-ar font-medium">
+                            <option value="ar.alafasy" class="text-slate-900">العفاسي</option>
+                            <option value="ar.abdulbasitmujawwad" class="text-slate-900">عبد الباسط (مجود)</option>
+                            <option value="ar.abdulbasitmurattal" class="text-slate-900">عبد الباسط (مرتل)</option>
+                            <option value="ar.husary" class="text-slate-900">الحصري</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="relative w-full">
+                <input type="text" id="searchInput" placeholder="ابحث عن سورة أو آية..." 
+                    class="w-full p-3.5 pe-14 rounded-2xl bg-slate-900/80 border border-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all shadow-inner text-base font-sans-ar backdrop-blur-sm">
+                <button onclick="performSearch()" class="absolute top-1/2 end-2 transform -translate-y-1/2 text-slate-900 hover:bg-amber-400 bg-amber-500 rounded-xl w-10 h-10 flex items-center justify-center transition-colors shadow-md">
+                    <i class="fa-solid fa-search"></i>
+                </button>
+            </div>
         </div>
     </header>
 
-    <div class="flex flex-1 overflow-hidden">
+    <div class="flex flex-1 overflow-hidden relative">
         <!-- Sidebar -->
-        <aside class="w-full md:w-1/4 lg:w-1/5 bg-gray-800 border-e border-gray-700 overflow-y-auto hidden md:block transition-all duration-300" id="sidebar">
-            <div class="p-4 bg-gray-900 sticky top-0 font-bold text-cyan-400 border-b border-gray-700 flex justify-between items-center z-10 shadow-sm">
-                <span id="indexTitle">السور</span>
-                <button class="md:hidden text-cyan-500 hover:text-cyan-300" onclick="toggleSidebar()"><i class="fa-solid fa-xmark text-xl"></i></button>
+        <aside class="absolute inset-y-0 right-0 z-40 w-4/5 max-w-xs bg-slate-900/95 backdrop-blur-xl border-e border-slate-800/80 overflow-y-auto transform translate-x-full md:translate-x-0 md:relative md:w-1/4 lg:w-1/5 transition-transform duration-300 shadow-2xl md:shadow-none flex flex-col" id="sidebar">
+            <div class="p-5 bg-slate-950/50 backdrop-blur-md sticky top-0 font-bold text-amber-500 border-b border-slate-800/80 flex justify-between items-center z-10 shadow-sm shrink-0 font-sans-ar">
+                <span id="indexTitle" class="text-lg tracking-wide">فهرس السور</span>
+                <button class="md:hidden text-slate-400 hover:text-rose-500 text-xl w-8 h-8 rounded-full flex items-center justify-center bg-slate-800/80 transition-colors" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <ul id="surahList" class="p-2 space-y-1"><div class="loader"></div></ul>
+            
+            <div id="bookmarkSection" class="p-5 border-b border-slate-800/80 hidden shrink-0 bg-slate-800/20">
+                <h4 class="text-xs text-slate-400 mb-3 uppercase font-bold tracking-widest font-sans flex items-center gap-2" id="bookmarkTitleText"><i class="fa-solid fa-bookmark text-amber-600"></i> Bookmarks</h4>
+                <div class="relative w-full group">
+                    <button onclick="loadSavedProgress()" class="w-full bg-gradient-to-br from-slate-800/90 to-slate-900/90 border border-amber-600/30 hover:border-amber-400 text-amber-100 p-4 rounded-2xl flex flex-col items-center gap-3 transition-all shadow-lg hover:shadow-amber-900/30 group-hover:bg-slate-800">
+                        <div class="flex items-center gap-2 text-sm text-amber-500 font-sans-ar font-bold"><i class="fa-solid fa-book-open-reader"></i> <span id="bookmarkActionText">إكمال القراءة</span></div>
+                        <span id="bookmarkSurahName" class="font-bold text-xl font-arabic text-white tracking-wide"></span>
+                    </button>
+                    <button onclick="removeBookmark(event)" class="absolute -top-2 -end-2 text-slate-300 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-full bg-rose-600 hover:bg-rose-500 outline-none shadow-xl z-10 opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 duration-200" title="Remove Bookmark">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <ul id="surahList" class="p-3 space-y-1.5 flex-1 overflow-y-auto hide-scrollbar pb-10"><div class="loader"></div></ul>
         </aside>
 
-        <!-- Mobile Menu Button -->
-        <button id="mobileMenuBtn" onclick="toggleSidebar()" class="md:hidden fixed bottom-6 end-6 bg-cyan-700 text-white p-4 rounded-full shadow-2xl z-50 hover:bg-cyan-600 transition-colors border-2 border-cyan-500">
-            <i class="fa-solid fa-list-ul text-xl"></i>
-        </button>
+        <!-- Sidebar Overlay -->
+        <div id="sidebarOverlay" onclick="toggleSidebar()" class="hidden fixed inset-0 bg-slate-950/80 z-30 md:hidden backdrop-blur-sm transition-opacity"></div>
 
-        <!-- Main Area -->
-        <main class="w-full md:w-3/4 lg:w-4/5 p-4 md:p-8 overflow-y-auto relative bg-gray-900" id="mainContent">
-            <div id="loadingScreen" class="hidden absolute inset-0 bg-gray-900/90 flex flex-col items-center justify-center z-20">
+        <!-- Main Workspace Area -->
+        <main class="w-full md:w-3/4 lg:w-4/5 p-4 md:p-8 overflow-y-auto relative bg-transparent pb-36 scroll-smooth transition-all duration-300" id="mainContent">
+            
+            <div id="loadingScreen" class="hidden absolute inset-0 bg-slate-900/80 flex flex-col items-center justify-center z-20 backdrop-blur-md">
                 <div class="loader"></div>
-                <p id="loadingText" class="text-cyan-400 text-xl font-bold mt-4">جاري التحميل...</p>
+                <p id="loadingText" class="text-amber-500 text-xl font-bold mt-5 font-sans-ar tracking-widest">جاري التحميل...</p>
             </div>
 
             <!-- Reading Container -->
-            <div id="readingArea" class="max-w-4xl mx-auto bg-gray-800 p-6 md:p-12 shadow-2xl rounded-2xl border border-gray-700 min-h-full">
-                <div class="text-center mb-6 border-b-2 border-cyan-800 pb-6 bg-gray-900 rounded-xl p-4 shadow-inner">
-                    <h2 id="surahTitle" class="text-4xl font-bold text-cyan-400 mb-2 font-arabic"></h2>
-                    <p id="surahType" class="text-cyan-600 text-lg font-bold"></p>
+            <div id="readingArea" class="max-w-5xl mx-auto glass-panel p-6 md:p-12 shadow-2xl rounded-[2.5rem] min-h-full ambient-glow transition-all">
+                <div class="text-center mb-10 border-b border-amber-500/20 pb-10 relative">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
+                    <h2 id="surahTitle" class="text-5xl md:text-6xl font-bold text-amber-400 mb-4 font-arabic drop-shadow-lg tracking-wide mt-4"></h2>
+                    <p id="surahType" class="text-slate-400 text-lg md:text-xl font-medium font-sans-ar bg-slate-900/50 inline-block px-6 py-2 rounded-full border border-slate-700/50 shadow-inner"></p>
                 </div>
 
-                <div class="flex flex-wrap justify-center gap-4 mb-10 bg-gray-900 p-4 rounded-xl border border-gray-700 shadow-inner">
-                    <button id="playBtn" onclick="toggleAudio()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-3 rounded-full flex items-center gap-2 transition shadow-md font-bold">
-                        <i class="fa-solid fa-play" id="playIcon"></i> <span id="playBtnText">تشغيل التلاوة</span>
-                    </button>
-                    <button onclick="stopAudio()" class="bg-rose-600 hover:bg-rose-500 text-white px-6 py-3 rounded-full flex items-center gap-2 transition shadow-md font-bold">
-                        <i class="fa-solid fa-stop"></i> <span id="stopBtnText">إيقاف</span>
-                    </button>
-                </div>
-                
-                <div id="bismillah" class="text-center text-3xl mb-10 text-cyan-400 font-bold hidden font-arabic drop-shadow-md">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+                <div id="bismillah" class="text-center text-3xl md:text-4xl mb-14 text-amber-500 font-bold hidden font-arabic drop-shadow-md tracking-wider">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
                 <div id="quranText" class="quran-text"></div>
             </div>
 
             <!-- Search Results Area -->
-            <div id="searchResultsArea" class="max-w-4xl mx-auto hidden bg-gray-800 p-6 md:p-8 shadow-2xl rounded-2xl border border-gray-700 min-h-[50vh]">
-                <div class="flex justify-between items-center mb-6 border-b-2 border-cyan-800 pb-4">
-                    <h2 id="searchResultsTitle" class="text-2xl font-bold text-cyan-400">نتائج البحث</h2>
-                    <button onclick="closeSearch()" class="text-rose-500 hover:text-rose-400 font-bold flex items-center gap-2 bg-gray-900 px-4 py-2 rounded-lg border border-gray-700"><i class="fa-solid fa-times"></i> <span id="closeSearchText">إغلاق</span></button>
+            <div id="searchResultsArea" class="max-w-4xl mx-auto hidden glass-panel p-6 md:p-10 shadow-2xl rounded-[2.5rem] min-h-[50vh]">
+                <div class="flex justify-between items-center mb-8 border-b border-amber-500/20 pb-6">
+                    <h2 id="searchResultsTitle" class="text-2xl md:text-3xl font-bold text-amber-400 font-sans-ar flex items-center gap-3"><i class="fa-solid fa-magnifying-glass"></i> نتائج البحث</h2>
+                    <button onclick="closeSearch()" class="text-rose-400 hover:text-rose-300 font-bold flex items-center gap-2 bg-slate-900/80 px-5 py-2.5 rounded-xl border border-rose-900/50 transition-colors font-sans-ar shadow-md hover:bg-slate-800"><i class="fa-solid fa-times"></i> <span id="closeSearchText">إغلاق</span></button>
                 </div>
-                <div id="searchResultsList" class="space-y-4"></div>
+                <div id="searchResultsList" class="space-y-5"></div>
             </div>
+
+            <!-- Services / Library Grid Area -->
+            <div id="servicesArea" class="max-w-6xl mx-auto hidden bg-transparent min-h-[70vh] relative">
+                
+                <!-- Daily Wisdom Banner -->
+                <div class="glass-panel rounded-[2rem] p-6 md:p-10 mb-8 md:mb-12 shadow-2xl border-l-4 border-l-amber-500 relative overflow-hidden flex flex-col items-center text-center justify-center min-h-[200px]">
+                    <i class="fa-solid fa-quote-right absolute top-6 right-8 text-6xl text-slate-700/30"></i>
+                    <h3 class="text-amber-500 font-bold font-sans tracking-widest text-sm md:text-base uppercase mb-4 w-full" id="dailyWisdomTitle">حكمة اليوم | Daily Wisdom</h3>
+                    <p id="dailyHadithTextAr" class="text-2xl md:text-4xl font-arabic text-slate-100 leading-loose mb-3 max-w-4xl drop-shadow-md"></p>
+                    <p id="dailyHadithTextEn" class="text-lg md:text-xl font-sans text-slate-400 leading-relaxed max-w-3xl"></p>
+                </div>
+
+                <div class="glass-panel p-8 md:p-12 shadow-2xl rounded-[2.5rem] relative ambient-glow">
+                    <div class="text-center mb-10 pb-6 relative border-b border-slate-700/50">
+                        <h2 id="servicesTitle" class="text-4xl md:text-5xl font-bold text-amber-400 mb-4 font-arabic drop-shadow-lg tracking-wide">المكتبة الإسلامية</h2>
+                        <p class="text-slate-400 text-lg md:text-xl font-sans-ar" id="servicesSubtitle">مجموعة من الخدمات والمراجع الإسلامية الشاملة</p>
+                        <button onclick="closeServices()" class="absolute top-0 end-0 text-slate-400 hover:text-rose-500 transition-all bg-slate-900/80 w-12 h-12 rounded-full flex items-center justify-center border border-slate-700 shadow-lg hover:scale-110"><i class="fa-solid fa-times text-xl"></i></button>
+                    </div>
+                    
+                    <!-- Services Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 justify-items-center mt-8">
+                        <!-- 1. Islam Basics -->
+                        <div class="service-card" onclick="showComingSoon()">
+                            <div class="service-icon-wrapper bg-gradient-to-br from-blue-500 to-indigo-900"><i class="fa-solid fa-book-open"></i></div>
+                            <div class="service-title" id="lbl_islamBasics">أساسيات الإسلام</div>
+                        </div>
+                        <!-- 2. Qadha Tracker -->
+                        <div class="service-card" onclick="openQadhaApp()">
+                            <div class="service-icon-wrapper bg-gradient-to-br from-emerald-500 to-teal-900 shadow-[0_0_20px_rgba(16,185,129,0.3)]"><i class="fa-solid fa-calendar-check"></i></div>
+                            <div class="service-title" id="lbl_qadhaTracker">متتبع القضاء</div>
+                        </div>
+                        <!-- 3. Duas & Ziyarat -->
+                        <div class="service-card" onclick="openDuasApp()">
+                            <div class="service-icon-wrapper bg-gradient-to-br from-amber-500 to-orange-800 shadow-[0_0_20px_rgba(245,158,11,0.3)]"><i class="fa-solid fa-hands-praying"></i></div>
+                            <div class="service-title" id="lbl_dua">الأدعية والزيارات</div>
+                        </div>
+                        <!-- 4. 99 Names of Allah -->
+                        <div class="service-card" onclick="loadAsmaAlHusna()">
+                            <div class="service-icon-wrapper bg-gradient-to-br from-purple-500 to-violet-900"><i class="fa-solid fa-list-ol"></i></div>
+                            <div class="service-title" id="lbl_99names">أسماء الله الحسنى</div>
+                        </div>
+                        <!-- 5. Tasbih al-Zahra -->
+                        <div class="service-card" onclick="openTasbihZahraApp()">
+                            <div class="service-icon-wrapper bg-gradient-to-br from-pink-500 to-rose-900"><i class="fa-solid fa-ring"></i></div>
+                            <div class="service-title" id="lbl_tasbihZahra">تسبيح الزهراء</div>
+                        </div>
+                        <!-- 6. Tasbih Counter -->
+                        <div class="service-card" onclick="openTasbihApp()">
+                            <div class="service-icon-wrapper bg-gradient-to-br from-slate-500 to-slate-900 border border-slate-500"><i class="fa-solid fa-fingerprint"></i></div>
+                            <div class="service-title" id="lbl_tasbihCounter">السبحة الإلكترونية</div>
+                        </div>
+                        <!-- 7. Tragedy of Karbala -->
+                        <div class="service-card" onclick="openKarbalaStory()">
+                            <div class="service-icon-wrapper bg-gradient-to-br from-red-600 to-red-950 shadow-[0_0_20px_rgba(220,38,38,0.4)]"><i class="fa-solid fa-flag"></i></div>
+                            <div class="service-title" id="lbl_karbala">واقعة كربلاء</div>
+                        </div>
+                        <!-- 8. Prayer Guide -->
+                        <div class="service-card" onclick="openPrayerGuide()">
+                            <div class="service-icon-wrapper bg-gradient-to-br from-cyan-500 to-blue-800"><i class="fa-solid fa-person-praying"></i></div>
+                            <div class="service-title" id="lbl_prayerGuide">دليل الصلاة</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prayer Guide Area -->
+            <div id="prayerGuideArea" class="max-w-6xl mx-auto hidden glass-panel p-6 md:p-12 shadow-2xl rounded-[2.5rem] relative mt-6 md:mt-12 ambient-glow border-t-4 border-t-cyan-500">
+                <button onclick="toggleServices()" class="absolute top-6 start-6 text-slate-400 hover:text-cyan-400 transition-colors w-12 h-12 flex items-center justify-center bg-slate-950/80 rounded-full border border-slate-800 z-10 shadow-lg hover:scale-110"><i class="fa-solid fa-arrow-right"></i></button>
+                <div class="text-center mb-12 border-b border-cyan-900/30 pb-10 relative">
+                    <i class="fa-solid fa-person-praying text-6xl text-cyan-500 mb-6 drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]"></i>
+                    <h2 class="text-4xl md:text-5xl font-bold text-cyan-400 font-arabic drop-shadow-md tracking-wide" id="prayerGuideTitle">دليل الصلاة اليومية</h2>
+                    <p class="mt-4 text-slate-400 font-sans-ar text-lg" id="prayerGuideSub">ركعات الفرائض والنوافل</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="prayerGuideGrid">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+
+            <!-- Qadha Tracker Area -->
+            <div id="qadhaArea" class="max-w-4xl mx-auto hidden glass-panel p-6 md:p-12 shadow-2xl rounded-[2.5rem] relative mt-6 md:mt-12 ambient-glow">
+                <button onclick="toggleServices()" class="absolute top-6 start-6 text-slate-400 hover:text-emerald-400 transition-colors w-12 h-12 flex items-center justify-center bg-slate-900/80 rounded-full border border-slate-700 z-10 shadow-lg hover:scale-110"><i class="fa-solid fa-arrow-right"></i></button>
+                <div class="text-center mb-10 border-b border-emerald-900/30 pb-8 relative">
+                    <i class="fa-solid fa-calendar-check text-5xl text-emerald-500 mb-6 drop-shadow-lg"></i>
+                    <h2 class="text-4xl font-bold text-emerald-400 font-arabic drop-shadow-md" id="qadhaTitle">متتبع القضاء</h2>
+                    <p class="mt-3 text-slate-400 font-sans-ar" id="qadhaSubtitle">سجل صلواتك وصيامك الفائت</p>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="qadhaGrid">
+                    <!-- JS populated Qadha cards -->
+                </div>
+                
+                <div class="mt-12 flex justify-center border-t border-slate-700/50 pt-8">
+                    <button onclick="resetAllQadha()" class="bg-slate-800/80 hover:bg-rose-900/80 text-rose-400 hover:text-rose-200 px-8 py-3 rounded-xl font-bold transition-all shadow-md border border-rose-900/50 outline-none font-sans-ar flex items-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> <span id="qadhaResetAllText">تصفير السجل بالكامل</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tasbih Tool Area -->
+            <div id="tasbihArea" class="max-w-md mx-auto hidden glass-panel p-8 md:p-12 shadow-2xl rounded-[3rem] text-center relative mt-6 md:mt-12">
+                <button onclick="toggleServices()" class="absolute top-6 start-6 text-slate-400 hover:text-amber-400 transition-colors w-12 h-12 flex items-center justify-center bg-slate-900/80 rounded-full border border-slate-700 shadow-lg hover:scale-110"><i class="fa-solid fa-arrow-right"></i></button>
+                <h2 id="tasbihTitle" class="text-3xl font-bold text-amber-400 mb-10 font-arabic drop-shadow-md tracking-wide">السبحة الإلكترونية</h2>
+                
+                <div class="bg-slate-900/80 rounded-[2.5rem] p-10 shadow-inner border border-amber-900/30 mb-12 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-amber-900/10 pointer-events-none"></div>
+                    <div class="text-7xl md:text-8xl font-black text-slate-50 tabular-nums font-sans drop-shadow-[0_4px_20px_rgba(251,191,36,0.3)] tracking-tighter" id="tasbihCountDisplay">0</div>
+                </div>
+                
+                <button onclick="incrementTasbih()" class="w-48 h-48 bg-gradient-to-br from-amber-500 to-amber-700 hover:from-amber-400 hover:to-amber-600 text-slate-900 rounded-full shadow-[0_0_50px_rgba(251,191,36,0.4)] flex items-center justify-center text-7xl active:scale-95 transition-transform mx-auto border-[6px] border-amber-300/30 outline-none relative group overflow-hidden">
+                    <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-full pointer-events-none"></div>
+                    <i class="fa-solid fa-fingerprint relative z-10 drop-shadow-md"></i>
+                </button>
+                
+                <div class="mt-14 flex justify-center gap-4">
+                    <button onclick="resetTasbih()" class="bg-slate-800/80 hover:bg-rose-900/80 text-slate-300 hover:text-white px-8 py-3.5 rounded-2xl font-bold transition-all shadow-md border border-slate-700 hover:border-rose-500 outline-none font-sans-ar flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> <span id="tasbihResetText">تصفير العداد</span></button>
+                </div>
+            </div>
+
+            <!-- Karbala Story Area -->
+            <div id="karbalaArea" class="max-w-5xl mx-auto hidden glass-panel p-6 md:p-12 shadow-2xl rounded-[2.5rem] border-t-4 border-t-red-600 relative mt-6 md:mt-12 ambient-glow">
+                <button onclick="toggleServices()" class="absolute top-6 start-6 text-slate-400 hover:text-red-400 transition-colors w-12 h-12 flex items-center justify-center bg-slate-950/80 rounded-full border border-slate-800 z-10 shadow-lg hover:scale-110"><i class="fa-solid fa-arrow-right"></i></button>
+                <div class="text-center mb-12 border-b border-red-900/30 pb-8 relative">
+                    <i class="fa-solid fa-flag text-6xl text-red-600 mb-6 drop-shadow-[0_0_15px_rgba(220,38,38,0.5)]"></i>
+                    <h2 id="karbalaMainTitle" class="text-4xl md:text-5xl font-bold text-red-500 font-arabic leading-tight drop-shadow-md"></h2>
+                </div>
+                <div id="karbalaContent" class="space-y-8 pb-10">
+                    <!-- Dynamic Karbala Content -->
+                </div>
+            </div>
+
+            <!-- Asma ul Husna Area -->
+            <div id="asmaArea" class="max-w-6xl mx-auto hidden glass-panel p-6 md:p-12 shadow-2xl rounded-[2.5rem] relative mt-6 md:mt-12 ambient-glow border-t-4 border-t-purple-600">
+                <button onclick="toggleServices()" class="absolute top-6 start-6 text-slate-400 hover:text-purple-400 transition-colors w-12 h-12 flex items-center justify-center bg-slate-950/80 rounded-full border border-slate-800 z-10 shadow-lg hover:scale-110"><i class="fa-solid fa-arrow-right"></i></button>
+                <div class="text-center mb-12 border-b border-purple-900/30 pb-10 relative">
+                    <i class="fa-solid fa-list-ol text-6xl text-purple-500 mb-6 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]"></i>
+                    <h2 class="text-4xl md:text-5xl font-bold text-purple-400 font-arabic drop-shadow-md tracking-wide" id="asmaTitle">أسماء الله الحسنى</h2>
+                </div>
+                <div id="asmaGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6 pb-10"></div>
+            </div>
+
+            <!-- Tasbih al-Zahra Smart Counter -->
+            <div id="tzArea" class="max-w-md mx-auto hidden glass-panel p-8 md:p-12 shadow-2xl rounded-[3rem] text-center relative mt-6 md:mt-12 border-t-4 border-t-pink-600">
+                <button onclick="toggleServices()" class="absolute top-6 start-6 text-slate-400 hover:text-pink-400 transition-colors w-12 h-12 flex items-center justify-center bg-slate-900/80 rounded-full border border-slate-700 z-10 shadow-lg hover:scale-110"><i class="fa-solid fa-arrow-right"></i></button>
+                <h2 class="text-3xl font-bold text-pink-400 mb-10 font-arabic drop-shadow-md tracking-wide" id="tzMainTitle">تسبيح الزهراء</h2>
+                
+                <div class="bg-slate-900/80 rounded-[2.5rem] p-10 shadow-inner border-[3px] border-slate-700 mb-12 transition-colors duration-500 relative overflow-hidden" id="tzPhaseBox">
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-pink-900/5 pointer-events-none"></div>
+                    <div class="text-4xl md:text-5xl font-bold text-pink-300 mb-8 font-arabic drop-shadow-md transition-all duration-300 transform scale-100" id="tzPhaseText">الله أكبر</div>
+                    <div class="text-7xl md:text-8xl font-black text-slate-50 tabular-nums font-sans drop-shadow-lg tracking-tighter" id="tzCountDisplay">0 <span class="text-4xl text-slate-600 font-medium">/ 34</span></div>
+                </div>
+                
+                <button onclick="incrementTz()" class="w-48 h-48 bg-gradient-to-br from-pink-600 to-pink-800 hover:from-pink-500 hover:to-pink-700 text-white rounded-full shadow-[0_0_50px_rgba(219,39,119,0.4)] flex items-center justify-center text-7xl active:scale-95 transition-transform mx-auto border-[6px] border-pink-400/30 outline-none relative group overflow-hidden">
+                     <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-full pointer-events-none"></div>
+                    <i class="fa-solid fa-hand-pointer relative z-10 drop-shadow-md"></i>
+                </button>
+                
+                <div class="mt-14 flex justify-center gap-4">
+                    <button onclick="resetTz()" class="bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white px-8 py-3.5 rounded-2xl font-bold transition-all shadow-md border border-slate-700 outline-none font-sans-ar flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> <span id="tzResetText">إعادة البدء</span></button>
+                </div>
+            </div>
+
+            <!-- Duas Area -->
+            <div id="duasArea" class="max-w-6xl mx-auto hidden glass-panel p-6 md:p-12 shadow-2xl rounded-[2.5rem] relative mt-6 md:mt-12 ambient-glow border-t-4 border-t-amber-600">
+                <button onclick="toggleServices()" class="absolute top-6 start-6 text-slate-400 hover:text-amber-400 transition-colors w-12 h-12 flex items-center justify-center bg-slate-950/80 rounded-full border border-slate-800 z-10 shadow-lg hover:scale-110"><i class="fa-solid fa-arrow-right"></i></button>
+                <div class="text-center mb-12 border-b border-amber-900/30 pb-10 relative">
+                    <i class="fa-solid fa-hands-praying text-6xl text-amber-500 mb-6 drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]"></i>
+                    <h2 class="text-4xl md:text-5xl font-bold text-amber-400 font-arabic drop-shadow-md tracking-wide" id="duasTitle">الأدعية والزيارات</h2>
+                </div>
+                <div id="duasContent" class="space-y-12 pb-10">
+                    
+                    <!-- Dua Al-Faraj -->
+                    <div class="bg-slate-900/60 p-8 md:p-12 rounded-[2.5rem] border border-amber-600/20 shadow-xl backdrop-blur-md relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-[50px] pointer-events-none"></div>
+                        <h3 class="text-3xl md:text-4xl font-bold text-amber-500 mb-8 text-center font-arabic border-b border-slate-700/50 pb-6 drop-shadow-sm tracking-wide" id="duaFarajTitle">دعاء الفرج</h3>
+                        <p class="font-arabic text-center text-3xl md:text-4xl leading-[2.2] text-slate-100 mb-10 drop-shadow-sm" dir="rtl">إِلٰهِي عَظُمَ الْبَلاءُ، وَبَرِحَ الْخَفاءُ، وَانْكَشَفَ الْغِطاءُ، وَضاقَتِ الْأَرْضُ وَمَنَعَتِ السَّماءُ، وَأَنْتَ الْمُسْتَعانُ وَإِلَيْكَ الْمُشْتَكىٰ، وَعَلَيْكَ الْمُعَوَّلُ فِي الشِّدَّةِ وَالرَّخاءِ. اللّٰهُمَّ صَلِّ عَلىٰ مُحَمَّدٍ وَآلِ مُحَمَّدٍ أُولِي الْأَمْرِ الَّذِينَ فَرَضْتَ عَلَيْنا طاعَتَهُمْ، وَعَرَّفْتَنا بِذٰلِكَ مَنْزِلَتَهُمْ، فَفَرِّجْ عَنّا بِحَقِّهِمْ فَرَجاً عاجِلاً قَرِيباً كَلَمْحِ الْبَصَرِ أَوْ هُوَ أَقْرَبُ. يَا مُحَمَّدُ يَا عَلِيُّ، يَا عَلِيُّ يَا مُحَمَّدُ، اكْفِيانِي فَإِنَّكُما كافِيانِ، وَانْصُرانِي فَإِنَّكُما ناصِرانِ. يَا مَوْلانا يَا صاحِبَ الزَّمانِ، الْغَوْثَ الْغَوْثَ الْغَوْثَ، أَدْرِكْنِي أَدْرِكْنِي أَدْرِكْنِي، السَّاعَةَ السَّاعَةَ السَّاعَةَ، الْعَجَلَ الْعَجَلَ الْعَجَلَ، يَا أَرْحَمَ الرَّاحِمِينَ، بِحَقِّ مُحَمَّدٍ وَآلِهِ الطَّاهِرِينَ.</p>
+                        <div class="bg-slate-950/80 p-6 md:p-8 rounded-2xl text-slate-400 font-sans text-base md:text-lg leading-relaxed text-left border border-slate-800 shadow-inner" dir="ltr" id="duaFarajEn">O Allah, terrible was the calamity, and its evil consequences are visible, the covering has been removed, (all) hopes have been cut off, the (plentiful) earth has shrunk, the heavenly blessings have been withheld. You alone can help, we refer our grief and sorrow to You, we have full faith in You, in the time of distress, as well as in good fortune. O Allah, send blessings on Muhammad and on the children of Muhammad, whom we must obey as per Your command, through which we become aware of their rank and status, and let there be joy after sorrow for us, for their sake, right away, in the twinkle of an eye, more rapidly than that. O Muhammad, O Ali, O Ali, O Muhammad, Give me enough, because both of you provide sufficiently. Help me, because both of you help and protect. O our master, O the authority of our times, Help! Help! Help! Come to my rescue! Come to my rescue! Come to my rescue! At this hour! At this hour! At this hour! Be quick! Be quick! Be quick! O the Most Merciful, for the sake of Muhammad and his pure progeny.</div>
+                    </div>
+
+                    <!-- Ziyarat Ashura (Extract) -->
+                    <div class="bg-slate-900/60 p-8 md:p-12 rounded-[2.5rem] border border-red-600/20 shadow-xl backdrop-blur-md relative overflow-hidden group mt-8">
+                        <div class="absolute top-0 left-0 w-32 h-32 bg-red-600/10 rounded-full blur-[50px] pointer-events-none"></div>
+                        <h3 class="text-3xl md:text-4xl font-bold text-red-500 mb-8 text-center font-arabic border-b border-slate-700/50 pb-6 drop-shadow-sm tracking-wide" id="ziyaratAshuraTitle">زيارة عاشوراء (مقتطف)</h3>
+                        <p class="font-arabic text-center text-3xl md:text-4xl leading-[2.2] text-slate-100 mb-10 drop-shadow-sm" dir="rtl">اَلسَّلامُ عَلَيْكَ يا اَبا عَبْدِاللهِ، اَلسَّلامُ عَلَيْكَ يَابْنَ رَسُولِ اللهِ، اَلسَّلامُ عَلَيْكَ يا خِيَرَةَ اللهِ وَابْنَ خِيَرَتِهِ، اَلسَّلامُ عَلَيْكَ يَابْنَ اَميرِ الْمُؤْمِنينَ وَابْنَ سَيِّدِ الْوَصِيّينَ، اَلسَّلامُ عَلَيْكَ يَابْنَ فاطِمَةَ سَيِّدَةِ نِساءِ الْعالَمينَ، اَلسَّلامُ عَلَيْكَ يا ثارَ اللهِ وَابْنَ ثارِهِ وَالْوِتْرَ الْمَوْتُورَ، اَلسَّلامُ عَلَيْكَ وَعَلَى الاَْرْواحِ الَّتي حَلَّتْ بِفِنائِكَ عَلَيْكُمْ مِنّي جَميعاً سَلامُ اللهِ اَبَداً ما بَقيتُ وَبَقِىَ اللَّيْلُ وَالنَّهارُ.</p>
+                        <div class="bg-slate-950/80 p-6 md:p-8 rounded-2xl text-slate-400 font-sans text-base md:text-lg leading-relaxed text-left border border-slate-800 shadow-inner" dir="ltr" id="ziyaratAshuraEn">Peace be upon you, O Abu Abdullah. Peace be upon you, O son of the Messenger of Allah. Peace be upon you, O choice of Allah and son of His choice. Peace be upon you, O son of the Commander of the Faithful and son of the master of the successors. Peace be upon you, O son of Fatimah, the master of the women of the worlds. Peace be upon you, O vengeance of Allah, son of His vengeance, and the unavenged one. Peace be upon you and upon the souls that rested in your courtyard. Upon you all, from me, is the peace of Allah forever, as long as I remain and the night and day remain.</div>
+                    </div>
+                </div>
+            </div>
+
         </main>
+    </div>
+
+    <!-- Floating Audio Player (Luxurious Version) -->
+    <!-- Fixed positioning on laptops so it aligns precisely left and fits exactly the width of the main content -->
+    <div id="bottomPlayer" class="fixed bottom-0 left-0 w-full md:w-3/4 lg:w-4/5 bg-slate-900/95 backdrop-blur-2xl border-t border-amber-500/30 pt-3 pb-5 px-4 z-[60] shadow-[0_-15px_40px_rgba(0,0,0,0.8)] transition-all duration-500 touch-none rounded-t-[2rem] md:rounded-tr-[2.5rem] md:rounded-tl-none translate-y-0 opacity-100">
+        
+        <!-- Swipe indicator line for Mobile -->
+        <div class="w-20 h-1.5 bg-slate-600 rounded-full mx-auto mb-4 shadow-inner md:hidden"></div>
+
+        <!-- Audio Progress Bar -->
+        <div class="max-w-5xl mx-auto w-full px-2 md:px-12 mb-3 flex items-center gap-3 md:gap-4 mt-2">
+            <span id="currentTimeDisplay" class="text-xs md:text-sm text-amber-500/90 font-mono w-12 text-right">00:00</span>
+            <div class="flex-1 h-2 md:h-2.5 bg-slate-800 border border-slate-700/50 rounded-full overflow-hidden cursor-pointer relative shadow-inner group" id="progressBarContainer" onclick="seekAudio(event)" dir="ltr">
+                <div id="audioProgressBar" class="absolute top-0 left-0 h-full bg-gradient-to-r from-amber-600 to-amber-400 w-0 rounded-full pointer-events-none transition-all duration-100 group-hover:from-amber-500 group-hover:to-amber-300"></div>
+            </div>
+            <span id="totalTimeDisplay" class="text-xs md:text-sm text-slate-500 font-mono w-12 text-left">00:00</span>
+        </div>
+
+        <div class="max-w-5xl mx-auto w-full flex items-center justify-between gap-2 md:gap-4 px-2 md:px-8">
+            
+            <!-- Volume Control -->
+            <div class="flex items-center gap-3 w-1/4" dir="ltr">
+                <button onclick="toggleMute()" class="focus:outline-none outline-none group">
+                    <i id="volumeIcon" class="fa-solid fa-volume-high text-amber-500 w-6 md:w-8 text-center text-lg md:text-xl transition-transform group-hover:scale-110 drop-shadow-md"></i>
+                </button>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" class="w-16 md:w-20 lg:w-28 cursor-pointer h-2 bg-slate-800 border border-slate-700 rounded-full appearance-none outline-none hidden sm:block shadow-inner hover:border-amber-500/50 transition-colors">
+            </div>
+
+            <!-- Playback Buttons -->
+            <div class="flex items-center justify-center gap-4 md:gap-8 lg:gap-10 flex-1" dir="ltr">
+                <button onclick="skipBackward()" class="text-slate-300 hover:text-amber-400 transition transform hover:scale-125 active:scale-90 outline-none drop-shadow-md" title="تأخير 10 ثواني (سهم يسار)">
+                    <i class="fa-solid fa-rotate-left text-xl md:text-2xl lg:text-3xl"></i>
+                </button>
+                
+                <button id="playBtn" onclick="toggleAudio()" class="bg-gradient-to-br from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 w-14 h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full flex items-center justify-center transition-all shadow-[0_0_20px_rgba(251,191,36,0.3)] transform hover:scale-110 active:scale-95 btn-disabled outline-none border-[3px] border-amber-200/40" title="تشغيل / إيقاف (مسافة)">
+                    <i class="fa-solid fa-play text-xl md:text-2xl lg:text-3xl ms-1 drop-shadow-sm" id="playIcon"></i>
+                </button>
+                
+                <button onclick="skipForward()" class="text-slate-300 hover:text-amber-400 transition transform hover:scale-125 active:scale-90 outline-none drop-shadow-md" title="تقديم 10 ثواني (سهم يمين)">
+                    <i class="fa-solid fa-rotate-right text-xl md:text-2xl lg:text-3xl"></i>
+                </button>
+
+                <button onclick="stopAudio()" class="text-slate-400 hover:text-rose-500 transition text-xl md:text-2xl lg:text-3xl ms-2 md:ms-4 active:scale-90 outline-none drop-shadow-md" title="إيقاف تماماً">
+                    <i class="fa-solid fa-stop"></i>
+                </button>
+            </div>
+            
+            <!-- Status text & Hide Button -->
+            <div class="w-1/4 flex justify-end items-center gap-3 md:gap-4">
+                <span id="audioStatusText" class="text-xs md:text-sm lg:text-base font-bold text-slate-400 truncate block font-sans tracking-wide">جاري...</span>
+                <button onclick="hidePlayer()" class="text-slate-400 hover:text-rose-500 hidden md:flex items-center justify-center w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 transition-colors outline-none shadow-inner border border-slate-700/50" title="إخفاء الشريط">
+                    <i class="fa-solid fa-chevron-down text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restore Player Mini Button -->
+    <button id="restorePlayerBtn" onclick="showPlayer()" class="fixed bottom-8 left-8 md:left-12 z-[70] bg-gradient-to-br from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 w-14 h-14 md:w-16 md:h-16 rounded-full shadow-[0_0_30px_rgba(251,191,36,0.6)] flex items-center justify-center transform hover:scale-110 transition-all duration-500 translate-y-32 opacity-0 pointer-events-none border-2 border-amber-200/50 outline-none">
+        <i class="fa-solid fa-music text-xl md:text-2xl drop-shadow-sm"></i>
+        <span class="absolute -top-1 -left-1 flex h-4 w-4">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-4 w-4 bg-amber-300"></span>
+        </span>
+    </button>
+
+    <!-- Custom Context Menu for Long Press -->
+    <div id="ayahContextMenu" class="hidden fixed z-[100] bg-slate-900/95 border border-amber-500/40 rounded-[1.5rem] shadow-2xl p-4 w-80 flex-col gap-2 backdrop-blur-xl transition-opacity">
+        <div class="flex justify-between items-center mb-2 px-2 border-b border-slate-700/80 pb-3">
+            <span id="ctxTitle" class="text-sm text-amber-500 font-bold uppercase tracking-widest font-sans">الخيارات Options</span>
+            <button onclick="closeContextMenu()" class="text-slate-400 hover:text-rose-500 transition-colors w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 hover:bg-slate-950 outline-none cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <button onclick="saveProgressContext()" class="flex items-center gap-4 w-full text-left px-5 py-3.5 rounded-xl hover:bg-slate-800 text-slate-200 transition outline-none cursor-pointer group">
+            <i class="fa-solid fa-bookmark text-amber-500 w-5 text-center group-hover:scale-125 transition-transform text-lg"></i> <span id="ctxSaveText" class="text-lg font-bold font-sans-ar">حفظ موضع القراءة</span>
+        </button>
+        <button onclick="playContextAyah()" class="flex items-center gap-4 w-full text-left px-5 py-3.5 rounded-xl hover:bg-slate-800 text-slate-200 transition outline-none cursor-pointer group mt-1">
+            <i class="fa-solid fa-play text-emerald-400 w-5 text-center group-hover:scale-125 transition-transform text-lg"></i> <span id="ctxPlayText" class="text-lg font-bold font-sans-ar">استماع هذه الآية</span>
+        </button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastMsg" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-slate-900/95 border border-amber-500/60 text-slate-50 px-8 py-5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.5)] z-[200] opacity-0 pointer-events-none transition-opacity duration-300 font-bold flex items-center gap-4 text-lg font-sans-ar backdrop-blur-md">
+        <i class="fa-solid fa-circle-check text-amber-400 text-2xl" id="toastIcon"></i> <span id="toastText" class="tracking-wide">تم الحفظ بنجاح</span>
     </div>
 
     <script>
@@ -219,36 +744,738 @@
         const CDN_AUDIO_URL = 'https://cdn.islamic.network/quran/audio/64'; 
 
         const i18n = {
-            ar: { title: "القرآن الكريم", searchPlaceholder: "ابحث عن سورة (مثال: الفاتحة) أو آية...", indexTitle: "السور", loading: "جاري التحميل...", play: "تشغيل التلاوة", pause: "إيقاف مؤقت", stop: "إيقاف", closeSearch: "إغلاق البحث", meccan: "سورة مكية", medinan: "سورة مدنية", ayahsCount: "آياتها", searchResultsFor: "نتائج البحث عن", noResults: "لم يتم العثور على نتائج. تأكد من الكلمة وحاول مرة أخرى.", errorLoading: "حدث خطأ في تحميل البيانات. يرجى المحاولة مرة أخرى.", surahMatch: "نتيجة مطابقة لاسم السورة", openSurah: "فتح السورة", reciterAlafasy: "العفاسي", reciterAbdulbasit: "عبد الباسط (مجود)", reciterAbdulbasitMurattal: "عبد الباسط (مرتل)", reciterHusary: "الحصري", pageLabel: "الصفحة" },
-            en: { title: "The Holy Quran", searchPlaceholder: "Search Surah (e.g. Fatiha) or Ayah...", indexTitle: "Surahs", loading: "Loading...", play: "Play Audio", pause: "Pause", stop: "Stop", closeSearch: "Close Search", meccan: "Meccan Surah", medinan: "Medinan Surah", ayahsCount: "Ayahs", searchResultsFor: "Search Results for", noResults: "No results found. Please try a different keyword.", errorLoading: "Data loading error. Please try again.", surahMatch: "Surah Name Match", openSurah: "Open Surah", reciterAlafasy: "Alafasy", reciterAbdulbasit: "Abdul Basit (Mujawwad)", reciterAbdulbasitMurattal: "Abdul Basit (Murattal)", reciterHusary: "Al-Husary", pageLabel: "Page" }
+            ar: { title: "تراث الشيعة", searchPlaceholder: "ابحث في السور والآيات...", indexTitle: "فهرس السور", loading: "جاري التحميل...", closeSearch: "إغلاق البحث", meccan: "مكية", medinan: "مدنية", ayahsCount: "آياتها", searchResultsFor: "نتائج البحث", noResults: "لم يتم العثور على نتائج.", errorLoading: "حدث خطأ في الاتصال. حاول مرة أخرى.", surahMatch: "اسم السورة", openSurah: "فتح", reciterAlafasy: "العفاسي", reciterAbdulbasit: "عبد الباسط (مجود)", reciterAbdulbasitMurattal: "عبد الباسط (مرتل)", reciterHusary: "الحصري", pageLabel: "الصفحة", audioLoading: "تجهيز التلاوة...", ready: "جاهز", ctxSave: "حفظ للقراءة لاحقاً", ctxPlay: "تشغيل هذه الآية", ctxTitle: "الخيارات", toastSaved: "تم حفظ موضع القراءة بنجاح!", toastRemoved: "تم إزالة العلامة المرجعية", continueReading: "إكمال القراءة", bookmarkTitle: "المحفوظات",
+                  servicesBtn: "المكتبة والمراجع", servicesTitle: "المكتبة الإسلامية", servicesSubtitle: "مجموعة من الخدمات والمراجع الإسلامية الشاملة", 
+                  lbl_islamBasics: "أساسيات الإسلام", lbl_prayerGuide: "دليل الصلاة", lbl_dua: "الأدعية والزيارات", lbl_99names: "أسماء الله الحسنى", 
+                  lbl_tasbihZahra: "تسبيح الزهراء", lbl_tasbihCounter: "السبحة الإلكترونية", lbl_qadhaTracker: "متتبع القضاء", lbl_karbala: "واقعة كربلاء",
+                  tasbihTitle: "السبحة الإلكترونية", tasbihReset: "تصفير العداد", comingSoon: "قريباً إن شاء الله! جاري العمل عليها.",
+                  tzMainTitle: "تسبيح الزهراء", tzResetText: "إعادة البدء", tzComplete: "تقبل الله أعمالكم!",
+                  asmaTitle: "أسماء الله الحسنى", duasTitle: "الأدعية والزيارات", duaFarajTitle: "دعاء الفرج", ziyaratAshuraTitle: "زيارة عاشوراء (مقتطف)",
+                  qadhaTitle: "متتبع القضاء", qadhaSubtitle: "سجل صلواتك وصيامك الفائت", qadhaResetAll: "تصفير السجل بالكامل",
+                  q_fajr: "صلاة الفجر", q_dhuhr: "صلاة الظهر", q_asr: "صلاة العصر", q_maghrib: "صلاة المغرب", q_isha: "صلاة العشاء", q_fast: "صيام الأيام",
+                  dailyWisdom: "حكمة اليوم | Daily Wisdom",
+                  prayerGuideTitle: "دليل الصلاة اليومية", prayerGuideSub: "ركعات الفرائض والنوافل",
+                  p_fajr: "صلاة الفجر", p_fajr_f: "ركعتان (جهراً)", p_fajr_n: "ركعتان قبل الفريضة",
+                  p_dhuhr: "صلاة الظهر", p_dhuhr_f: "٤ ركعات (إخفاتاً)", p_dhuhr_n: "٨ ركعات قبل الفريضة",
+                  p_asr: "صلاة العصر", p_asr_f: "٤ ركعات (إخفاتاً)", p_asr_n: "٨ ركعات قبل الفريضة",
+                  p_maghrib: "صلاة المغرب", p_maghrib_f: "٣ ركعات (جهراً)", p_maghrib_n: "٤ ركعات بعد الفريضة",
+                  p_isha: "صلاة العشاء", p_isha_f: "٤ ركعات (جهراً)", p_isha_n: "ركعتان من جلوس (الوتيرة)",
+                  fardText: "الفريضة", nafilahText: "النافلة"
+                },
+            en: { title: "Shia's Legacy", searchPlaceholder: "Search Surahs or Ayahs...", indexTitle: "Surah Index", loading: "Loading...", closeSearch: "Close", meccan: "Meccan", medinan: "Medinan", ayahsCount: "Ayahs", searchResultsFor: "Results for", noResults: "No results found.", errorLoading: "Connection Error. Try again.", surahMatch: "Surah Name", openSurah: "Open", reciterAlafasy: "Alafasy", reciterAbdulbasit: "Abdul Basit (Mujawwad)", reciterAbdulbasitMurattal: "Abdul Basit (Murattal)", reciterHusary: "Al-Husary", pageLabel: "Page", audioLoading: "Syncing Audio...", ready: "Ready", ctxSave: "Save progress to continue later", ctxPlay: "Play this Ayah", ctxTitle: "Options", toastSaved: "Progress saved successfully!", toastRemoved: "Bookmark removed", continueReading: "Continue Reading", bookmarkTitle: "Bookmarks",
+                  servicesBtn: "Library & Hub", servicesTitle: "Islamic Library", servicesSubtitle: "A comprehensive collection of Islamic services and references",
+                  lbl_islamBasics: "Islam Basics", lbl_prayerGuide: "Prayer Guide", lbl_dua: "Duas & Ziyarat", lbl_99names: "99 Names of Allah",
+                  lbl_tasbihZahra: "Tasbih al-Zahra", lbl_tasbihCounter: "Tasbih Counter", lbl_qadhaTracker: "Qadha Tracker", lbl_karbala: "Tragedy of Karbala",
+                  tasbihTitle: "Digital Tasbih", tasbihReset: "Reset Counter", comingSoon: "Coming soon insha'Allah! Work in progress.",
+                  tzMainTitle: "Tasbih al-Zahra", tzResetText: "Start Over", tzComplete: "May Allah accept your deeds!",
+                  asmaTitle: "99 Names of Allah", duasTitle: "Duas & Ziyarat", duaFarajTitle: "Dua al-Faraj", ziyaratAshuraTitle: "Ziyarat Ashura (Extract)",
+                  qadhaTitle: "Qadha Tracker", qadhaSubtitle: "Track your missed prayers and fasts", qadhaResetAll: "Reset Entire Tracker",
+                  q_fajr: "Fajr Prayer", q_dhuhr: "Dhuhr Prayer", q_asr: "Asr Prayer", q_maghrib: "Maghrib Prayer", q_isha: "Isha Prayer", q_fast: "Missed Fasts",
+                  dailyWisdom: "Daily Wisdom",
+                  prayerGuideTitle: "Daily Prayer Guide", prayerGuideSub: "Obligatory & Supererogatory Rakaats",
+                  p_fajr: "Fajr Prayer", p_fajr_f: "2 Rakaats (Audible)", p_fajr_n: "2 Rakaats before Fard",
+                  p_dhuhr: "Dhuhr Prayer", p_dhuhr_f: "4 Rakaats (Silent)", p_dhuhr_n: "8 Rakaats before Fard",
+                  p_asr: "Asr Prayer", p_asr_f: "4 Rakaats (Silent)", p_asr_n: "8 Rakaats before Fard",
+                  p_maghrib: "Maghrib Prayer", p_maghrib_f: "3 Rakaats (Audible)", p_maghrib_n: "4 Rakaats after Fard",
+                  p_isha: "Isha Prayer", p_isha_f: "4 Rakaats (Audible)", p_isha_n: "2 Rakaats sitting (Watira)",
+                  fardText: "Fard (Obligatory)", nafilahText: "Nafilah (Optional)"
+                }
         };
 
-        let currentLang = 'ar', currentReciter = 'ar.alafasy', surahsMetaData = [], currentSurahData = null;
-        let audioPlayer = new Audio(), audioList = [], currentAudioIndex = 0, isPlaying = false, isAudioReady = false;
+        const dailyHadiths = [
+            { ar: "قِيمَةُ كُلِّ امْرِئٍ مَا يُحْسِنُهُ", en: "The value of a man is in what he does well. - Imam Ali (AS)" },
+            { ar: "مَنْ أَصْلَحَ سَرِيرَتَهُ أَصْلَحَ اللَّهُ عَلانِيَتَهُ", en: "He who purifies his inner self, Allah purifies his outer self. - Imam Ali (AS)" },
+            { ar: "الْعَجَبُ مِمَّنْ يَقْنَطُ وَمَعَهُ الاِسْتِغْفَارُ", en: "I wonder at the one who despairs while he has the ability to seek forgiveness. - Imam Ali (AS)" },
+            { ar: "إِنَّمَا خَرَجْتُ لِطَلَبِ الإِصْلاحِ فِي أُمَّةِ جَدِّي", en: "I have only risen to seek reform in the nation of my grandfather. - Imam Husayn (AS)" },
+            { ar: "لا تُعْطُوا كَلِمَةَ الْحِكْمَةِ غَيْرَ أَهْلِهَا فَتَظْلِمُوهَا", en: "Do not give the word of wisdom to those who do not deserve it, lest you wrong it. - Imam Ali (AS)" }
+        ];
+
+        const karbalaStoryData = {
+            en: [
+                { title: "The Story of Karbala: The Stand of Imam Husayn", content: "More than thirteen centuries ago, in the scorching desert of Iraq, a moment unfolded that would echo through history. It was not merely a battle for land or power. It was a stand for justice, dignity, and faith. This is the story of Karbala, the story of Imam Husayn ibn Ali, the beloved grandson of the Prophet Muhammad." },
+                { title: "The World After the Prophet", content: "After the passing of the Prophet Muhammad in 632 CE, the Muslim world entered a new chapter. Leadership of the community became a deeply sensitive issue. Over time, political power shifted through different rulers and dynasties. Decades later, the Umayyad dynasty controlled the Islamic empire. When Muawiya ibn Abi Sufyan died, his son Yazid inherited the throne. Many Muslims believed leadership should be based on justice, knowledge, and moral character. Yazid's rule was controversial, and many felt it represented a dangerous shift toward tyranny." },
+                { title: "Imam Husayn's Refusal", content: "Imam Husayn ibn Ali was known for his courage, wisdom, and integrity. As the grandson of the Prophet Muhammad and the son of Ali ibn Abi Talib and Fatimah, he carried a legacy of moral leadership. When Yazid demanded allegiance, Husayn refused. For him, giving loyalty to a corrupt ruler would mean legitimizing injustice. Husayn famously declared that a man like him could never pledge allegiance to a ruler like Yazid. His refusal was not driven by ambition for power. Instead, it was a principled stand. Husayn believed that remaining silent in the face of oppression would betray the values of Islam." },
+                { title: "The Letters from Kufa", content: "In the city of Kufa, many people were dissatisfied with Umayyad rule. They sent hundreds of letters to Imam Husayn asking him to come and lead them. They promised support and loyalty. Encouraged by these messages, Husayn sent his cousin Muslim ibn Aqil to investigate the situation. At first, thousands pledged loyalty to Husayn. But when the Umayyad governor threatened the people, fear spread through the city. One by one, they withdrew their support. Muslim ibn Aqil was eventually captured and executed. Yet Husayn, traveling toward Kufa with his family and companions, had not yet received the full news of what had happened." },
+                { title: "The Journey Toward Karbala", content: "Imam Husayn left Mecca with a small caravan. Among them were his relatives, children, friends, and loyal companions. They knew the journey was dangerous, yet they chose to stand beside him. Along the way, Husayn received warnings that the political situation had changed. Support in Kufa had collapsed. Despite this, Husayn continued forward. Turning back would mean accepting the rule he believed was unjust. Eventually, an army sent by the Umayyad governor intercepted Husayn's caravan and forced them to stop in a barren desert land called Karbala." },
+                { title: "Encircled in the Desert", content: "It was the year 680 CE, the 2nd day of Muharram. Husayn and his companions were surrounded by thousands of soldiers. Their camp stood near the banks of the Euphrates River, but soon the army blocked their access to water. Days passed in the scorching heat. Children cried from thirst. Husayn's companions knew the odds were impossible. Yet none abandoned him. One by one, they reaffirmed their loyalty. Husayn gathered them and told them they were free to leave under the cover of night. No one left. They declared that standing beside him was an honor greater than life itself." },
+                { title: "The Day of Ashura", content: "On the 10th of Muharram, the day known as Ashura, the battle began. Husayn's companions faced a massive army. Despite their small numbers, they fought with courage. Each companion entered the battlefield knowing it would likely be their final moment. Among those who fell were Husayn's relatives and closest friends. Abbas ibn Ali, the standard bearer, was killed while attempting to bring water back to the thirsty camp. Even Husayn's young infant son, Ali al-Asghar, was struck down. Finally, Imam Husayn himself entered the battlefield. Exhausted, wounded, and alone, he continued to stand with dignity. He was ultimately surrounded and killed, becoming a martyr whose name would live forever in history." },
+                { title: "The Aftermath", content: "After the battle, the surviving women and children were taken as captives. Among them was Zaynab, the sister of Husayn. Despite the tragedy, she spoke boldly against the injustice she witnessed. Through her speeches and resilience, the story of Karbala spread across the Muslim world. What the rulers hoped would be forgotten instead became a symbol of resistance." },
+                { title: "The Legacy of Karbala", content: "The tragedy of Karbala transformed into a timeless message. Imam Husayn's stand showed that even a small group can challenge tyranny with courage and faith. For millions of people, Karbala represents the ultimate sacrifice for truth and justice. Every year during the month of Muharram, people around the world remember the events of that desert and honor the courage of Husayn and his companions. The story continues to inspire those who believe that dignity and justice are worth standing for, no matter the cost." },
+                { title: "Conclusion", content: "Karbala is more than a historical event. It is a reminder that moral courage can shape the course of history. The name of Husayn became a symbol that echoes whenever people stand against oppression. And in the quiet desert where the tragedy occurred, the message remains: that truth, sacrifice, and faith can outlive any empire." }
+            ],
+            ar: [
+                { title: "قصة كربلاء: موقف الإمام الحسين", content: "قبل أكثر من ثلاثة عشر قرناً، في صحراء العراق الحارقة، تكشفت لحظة سيتردد صداها عبر التاريخ. لم تكن مجرد معركة من أجل الأرض أو السلطة. لقد كان موقفاً من أجل العدالة والكرامة والإيمان. هذه قصة كربلاء، قصة الإمام الحسين بن علي، الحفيد الحبيب للنبي محمد." },
+                { title: "العالم بعد النبي", content: "بعد وفاة النبي محمد عام 632 م، دخل العالم الإسلامي فصلاً جديداً. أصبحت قيادة الأمة قضية حساسة للغاية. وبمرور الوقت، انتقلت السلطة السياسية بين حكام وسلالات مختلفة. وبعد عقود، سيطرت الدولة الأموية على الإمبراطورية الإسلامية. وعندما توفي معاوية بن أبي سفيان، ورث ابنه يزيد العرش. كان الكثير من المسلمين يعتقدون أن القيادة يجب أن تُبنى على العدل والعلم والأخلاق. كان حكم يزيد مثيراً للجدل، وشعر الكثيرون أنه يمثل تحولاً خطيراً نحو الاستبداد." },
+                { title: "رفض الإمام الحسين", content: "عُرف الإمام الحسين بن علي بشجاعته وحكمته ونزاهته. بصفته حفيد النبي محمد وابن علي بن أبي طالب وفاطمة الزهراء، فقد حمل إرثاً من القيادة الأخلاقية. عندما طالب يزيد بالبيعة، رفض الحسين. بالنسبة له، فإن إعطاء الولاء لحاكم فاسد يعني إضفاء الشرعية على الظلم. أعلن الحسين مقولته الشهيرة بأن مثله لا يبايع مثله أبداً. لم يكن رفضه مدفوعاً بالطموح للسلطة، بل كان موقفاً مبدئياً. آمن الحسين بأن البقاء صامتاً في وجه الظلم هو خيانة لقيم الإسلام." },
+                { title: "رسائل من الكوفة", content: "في مدينة الكوفة، كان الكثير من الناس غير راضين عن الحكم الأموي. أرسلوا مئات الرسائل إلى الإمام الحسين يطلبون منه القدوم وقيادتهم، ووعدوه بالدعم والولاء. بتشجيع من هذه الرسائل، أرسل الحسين ابن عمه مسلم بن عقيل للتحقيق في الوضع. في البداية، تعهد الآلاف بالولاء للحسين. ولكن عندما هدد الحاكم الأموي الناس، انتشر الخوف في المدينة، وسحبوا دعمهم واحداً تلو الآخر. تم القبض على مسلم بن عقيل وإعدامه. ومع ذلك، كان الحسين يسافر نحو الكوفة مع عائلته وأصحابه، ولم يكن قد تلقى بعد الأخبار الكاملة عما حدث." },
+                { title: "الرحلة نحو كربلاء", content: "غادر الإمام الحسين مكة مع قافلة صغيرة. كان من بينهم أقاربه وأطفاله وأصدقاؤه وأصحابه المخلصون. كانوا يعلمون أن الرحلة محفوفة بالمخاطر، ومع ذلك اختاروا الوقوف بجانبه. على طول الطريق، تلقى الحسين تحذيرات من أن الوضع السياسي قد تغير وأن الدعم في الكوفة قد انهار. على الرغم من ذلك، واصل الحسين المضي قدماً. كان التراجع يعني قبول الحكم الذي كان يعتقد أنه غير عادل. في النهاية، اعترض جيش أرسله الحاكم الأموي قافلة الحسين وأجبرهم على التوقف في أرض صحراوية قاحلة تسمى كربلاء." },
+                { title: "محاصرون في الصحراء", content: "كان ذلك في عام 680 م، في اليوم الثاني من محرم. حوصر الحسين وأصحابه بآلاف الجنود. أقيم مخيمهم بالقرب من ضفاف نهر الفرات، ولكن سرعان ما منع الجيش وصولهم إلى الماء. مرت الأيام في الحر الشديد، وبكى الأطفال من العطش. كان أصحاب الحسين يعلمون أن الاحتمالات مستحيلة، لكن لم يتخلَّ عنه أحد. واحداً تلو الآخر، جددوا ولاءهم. جمعهم الحسين وأخبرهم أنهم أحرار في المغادرة تحت جنح الظلام، لكن أحداً لم يغادر. أعلنوا أن الوقوف بجانبه شرف أعظم من الحياة نفسها." },
+                { title: "يوم عاشوراء", content: "في العاشر من محرم، اليوم المعروف بعاشوراء، بدأت المعركة. واجه أصحاب الحسين جيشاً ضخماً. وعلى الرغم من قلة عددهم، قاتلوا بشجاعة. دخل كل صحابي إلى ساحة المعركة وهو يعلم أنها ستكون على الأرجح لحظته الأخيرة. ومن بين الذين سقطوا أقارب الحسين وأقرب أصدقائه. قُتل العباس بن علي، حامل الراية، أثناء محاولته إحضار الماء للمخيم العطشان. حتى ابن الحسين الرضيع، علي الأصغر، تم استهدافه. وأخيراً، دخل الإمام الحسين نفسه إلى ساحة المعركة. مرهقاً، وجريحاً، ووحيداً، استمر في الصمود بكرامة. وفي النهاية، تم محاصرته وقتله، ليصبح شهيداً سيخلد التاريخ اسمه إلى الأبد." },
+                { title: "ما بعد المعركة", content: "بعد المعركة، تم أخذ النساء والأطفال الناجين كأسرى. ومن بينهم السيدة زينب، أخت الحسين. على الرغم من المأساة، تحدثت بجرأة ضد الظلم الذي شهدته. ومن خلال خطبها وصمودها، انتشرت قصة كربلاء في جميع أنحاء العالم الإسلامي. وما كان الحكام يأملون أن يُنسى، أصبح بدلاً من ذلك رمزاً للمقاومة." },
+                { title: "إرث كربلاء", content: "تحولت مأساة كربلاء إلى رسالة خالدة. أظهر موقف الإمام الحسين أن حتى مجموعة صغيرة يمكنها تحدي الطغيان بالشجاعة والإيمان. بالنسبة لملايين الناس، تمثل كربلاء التضحية القصوى من أجل الحقيقة والعدالة. في كل عام خلال شهر محرم، يتذكر الناس في جميع أنحاء العالم أحداث تلك الصحراء ويكرمون شجاعة الحسين وأصحابه. تستمر القصة في إلهام أولئك الذين يعتقدون أن الكرامة والعدالة تستحقان الوقوف من أجلهما، مهما كان الثمن." },
+                { title: "خاتمة", content: "كربلاء هي أكثر من مجرد حدث تاريخي. إنها تذكير بأن الشجاعة الأخلاقية يمكن أن تشكل مسار التاريخ. أصبح اسم الحسين رمزاً يتردد صداه كلما وقف الناس ضد الظلم. وفي الصحراء الهادئة حيث وقعت المأساة، تبقى الرسالة: أن الحقيقة والتضحية والإيمان يمكن أن تعيش أطول من أي إمبراطورية." }
+            ]
+        };
+
+        const prayerGuideData = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+
+        // Qadha Tracker Logic
+        let qadhaStats = { fajr: 0, dhuhr: 0, asr: 0, maghrib: 0, isha: 0, fast: 0 };
+        const qadhaKeys = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'fast'];
         
-        let consecutiveErrors = 0;
-        let errorTimeout = null;
+        let currentLang = 'ar', currentPlatform = 'mobile', currentReciter = 'ar.alafasy', surahsMetaData = [], currentSurahData = null;
+        let audioPlayer = new Audio(), audioList = [], currentAudioIndex = 0, isPlaying = false, isAudioReady = false;
+        let consecutiveErrors = 0, errorTimeout = null;
+        let activeContextIndex = -1; 
+        let isMuted = false;
+        let previousVolume = 1;
+        let tasbihCount = 0;
 
+        // Note: some elements are fetched lazily to avoid null errors when updating translation texts
         const elements = {
-            appTitle: document.getElementById('appTitle'), searchInput: document.getElementById('searchInput'), indexTitle: document.getElementById('indexTitle'), loadingText: document.getElementById('loadingText'),
-            playBtnText: document.getElementById('playBtnText'), stopBtnText: document.getElementById('stopBtnText'), closeSearchText: document.getElementById('closeSearchText'), surahList: document.getElementById('surahList'),
-            quranText: document.getElementById('quranText'), surahTitle: document.getElementById('surahTitle'), surahType: document.getElementById('surahType'), bismillah: document.getElementById('bismillah'),
-            readingArea: document.getElementById('readingArea'), searchResultsArea: document.getElementById('searchResultsArea'), searchResultsList: document.getElementById('searchResultsList'),
-            searchResultsTitle: document.getElementById('searchResultsTitle'), loadingScreen: document.getElementById('loadingScreen'), sidebar: document.getElementById('sidebar'), playIcon: document.getElementById('playIcon'),
-            langSelect: document.getElementById('langSelect'), reciterSelect: document.getElementById('reciterSelect'), playBtn: document.getElementById('playBtn')
+            appTitle: () => document.getElementById('appTitle'), 
+            searchInput: () => document.getElementById('searchInput'), 
+            indexTitle: () => document.getElementById('indexTitle'), 
+            loadingText: () => document.getElementById('loadingText'),
+            closeSearchText: () => document.getElementById('closeSearchText'), 
+            surahList: () => document.getElementById('surahList'),
+            quranText: () => document.getElementById('quranText'), 
+            surahTitle: () => document.getElementById('surahTitle'), 
+            surahType: () => document.getElementById('surahType'), 
+            bismillah: () => document.getElementById('bismillah'),
+            readingArea: () => document.getElementById('readingArea'), 
+            searchResultsArea: () => document.getElementById('searchResultsArea'), 
+            searchResultsList: () => document.getElementById('searchResultsList'),
+            searchResultsTitle: () => document.getElementById('searchResultsTitle'), 
+            loadingScreen: () => document.getElementById('loadingScreen'), 
+            sidebar: () => document.getElementById('sidebar'), 
+            sidebarOverlay: () => document.getElementById('sidebarOverlay'), 
+            mainContent: () => document.getElementById('mainContent'),
+            
+            playIcon: () => document.getElementById('playIcon'), 
+            playBtn: () => document.getElementById('playBtn'),
+            langSelectDesktop: () => document.getElementById('langSelectDesktop'), 
+            reciterSelectDesktop: () => document.getElementById('reciterSelectDesktop'),
+            langSelectMobile: () => document.getElementById('langSelectMobile'), 
+            reciterSelectMobile: () => document.getElementById('reciterSelectMobile'),
+            volumeSlider: () => document.getElementById('volumeSlider'), 
+            volumeIcon: () => document.getElementById('volumeIcon'), 
+            audioStatusText: () => document.getElementById('audioStatusText'),
+            bottomPlayer: () => document.getElementById('bottomPlayer'), 
+            restorePlayerBtn: () => document.getElementById('restorePlayerBtn'),
+            
+            ctxSaveText: () => document.getElementById('ctxSaveText'), 
+            ctxPlayText: () => document.getElementById('ctxPlayText'), 
+            ctxTitle: () => document.getElementById('ctxTitle'),
+            bookmarkSection: () => document.getElementById('bookmarkSection'), 
+            bookmarkActionText: () => document.getElementById('bookmarkActionText'),
+            bookmarkSurahName: () => document.getElementById('bookmarkSurahName'), 
+            bookmarkTitleText: () => document.getElementById('bookmarkTitleText'),
+            
+            // Services Elements
+            servicesArea: () => document.getElementById('servicesArea'), 
+            tasbihArea: () => document.getElementById('tasbihArea'),
+            servicesTextDesktop: () => document.getElementById('servicesTextDesktop'), 
+            servicesTextMobile: () => document.getElementById('servicesTextMobile'),
+            servicesTitle: () => document.getElementById('servicesTitle'), 
+            servicesSubtitle: () => document.getElementById('servicesSubtitle'),
+            lbl_islamBasics: () => document.getElementById('lbl_islamBasics'), 
+            lbl_prayerGuide: () => document.getElementById('lbl_prayerGuide'),
+            lbl_dua: () => document.getElementById('lbl_dua'), 
+            lbl_99names: () => document.getElementById('lbl_99names'),
+            lbl_tasbihZahra: () => document.getElementById('lbl_tasbihZahra'), 
+            lbl_tasbihCounter: () => document.getElementById('lbl_tasbihCounter'),
+            lbl_qadhaTracker: () => document.getElementById('lbl_qadhaTracker'), 
+            lbl_karbala: () => document.getElementById('lbl_karbala'),
+            tasbihTitle: () => document.getElementById('tasbihTitle'), 
+            tasbihCountDisplay: () => document.getElementById('tasbihCountDisplay'),
+            tasbihResetText: () => document.getElementById('tasbihResetText'),
+            
+            // Karbala Elements
+            karbalaArea: () => document.getElementById('karbalaArea'), 
+            karbalaMainTitle: () => document.getElementById('karbalaMainTitle'),
+            karbalaContent: () => document.getElementById('karbalaContent'),
+
+            // New Sections Elements
+            asmaArea: () => document.getElementById('asmaArea'), 
+            asmaGrid: () => document.getElementById('asmaGrid'),
+            tzArea: () => document.getElementById('tzArea'), 
+            tzPhaseText: () => document.getElementById('tzPhaseText'), 
+            tzCountDisplay: () => document.getElementById('tzCountDisplay'), 
+            tzPhaseBox: () => document.getElementById('tzPhaseBox'),
+            duasArea: () => document.getElementById('duasArea'),
+            
+            // Qadha Tracker Elements
+            qadhaArea: () => document.getElementById('qadhaArea'),
+            qadhaGrid: () => document.getElementById('qadhaGrid'),
+            qadhaTitle: () => document.getElementById('qadhaTitle'),
+            qadhaSubtitle: () => document.getElementById('qadhaSubtitle'),
+            qadhaResetAllText: () => document.getElementById('qadhaResetAllText'),
+            
+            // Prayer Guide
+            prayerGuideArea: () => document.getElementById('prayerGuideArea'),
+            prayerGuideGrid: () => document.getElementById('prayerGuideGrid'),
+            prayerGuideTitle: () => document.getElementById('prayerGuideTitle'),
+            prayerGuideSub: () => document.getElementById('prayerGuideSub'),
+            
+            dailyWisdomTitle: () => document.getElementById('dailyWisdomTitle'),
+            
+            // Audio Progress
+            audioProgressBar: () => document.getElementById('audioProgressBar'),
+            currentTimeDisplay: () => document.getElementById('currentTimeDisplay'),
+            totalTimeDisplay: () => document.getElementById('totalTimeDisplay')
         };
 
-        window.onload = () => {
-            const savedLang = localStorage.getItem('quranLang') || 'ar';
-            elements.langSelect.value = savedLang;
-            changeLanguage(savedLang);
-            const savedReciter = localStorage.getItem('quranReciter') || 'ar.alafasy';
-            currentReciter = savedReciter;
-            elements.reciterSelect.value = savedReciter;
+        // TZ Logic Variables
+        let tzPhase = 0; // 0: Akbar, 1: Hamd, 2: Tasbih, 3: Done
+        let tzCountLocal = 0;
+        const tzLimits = [34, 33, 33];
+        const tzPhasesAr = ['اللَّهُ أَكْبَرُ', 'الْحَمْدُ لِلَّهِ', 'سُبْحَانَ اللَّهِ', 'اكتمل التسبيح'];
+        const tzPhasesEn = ['Allahu Akbar', 'Alhamdulillah', 'Subhanallah', 'Completed'];
+
+        // --- View Manager ---
+        function showView(viewName) {
+            ['readingArea', 'searchResultsArea', 'servicesArea', 'tasbihArea', 'karbalaArea', 'asmaArea', 'tzArea', 'duasArea', 'qadhaArea', 'prayerGuideArea'].forEach(id => {
+                const el = elements[id]();
+                if(el) el.style.display = 'none';
+            });
             
-            audioPlayer.addEventListener('ended', playNextAyah);
-            audioPlayer.addEventListener('error', () => { handlePlaybackError(); });
-        };
+            if (viewName === 'reading') elements.readingArea() && (elements.readingArea().style.display = 'block');
+            if (viewName === 'search') elements.searchResultsArea() && (elements.searchResultsArea().style.display = 'block');
+            if (viewName === 'services') elements.servicesArea() && (elements.servicesArea().style.display = 'block');
+            if (viewName === 'tasbih') elements.tasbihArea() && (elements.tasbihArea().style.display = 'block');
+            if (viewName === 'karbala') elements.karbalaArea() && (elements.karbalaArea().style.display = 'block');
+            if (viewName === 'asma') elements.asmaArea() && (elements.asmaArea().style.display = 'block');
+            if (viewName === 'tz') elements.tzArea() && (elements.tzArea().style.display = 'block');
+            if (viewName === 'duas') elements.duasArea() && (elements.duasArea().style.display = 'block');
+            if (viewName === 'qadha') elements.qadhaArea() && (elements.qadhaArea().style.display = 'block');
+            if (viewName === 'prayer') elements.prayerGuideArea() && (elements.prayerGuideArea().style.display = 'block');
+        }
+
+        // --- Services Logic ---
+        function setRandomHadith() {
+            const index = Math.floor(Math.random() * dailyHadiths.length);
+            document.getElementById('dailyHadithTextAr').textContent = dailyHadiths[index].ar;
+            document.getElementById('dailyHadithTextEn').textContent = dailyHadiths[index].en;
+        }
+
+        function toggleServices() {
+            if (elements.servicesArea() && elements.servicesArea().style.display === 'block') {
+                showView('reading');
+                if (isAudioReady || isPlaying) showPlayer(); 
+            } else {
+                showView('services');
+                setRandomHadith();
+                hidePlayer(); 
+                if(elements.searchInput()) elements.searchInput().value = '';
+            }
+        }
+
+        function closeServices() {
+            showView('reading');
+            if (isAudioReady || isPlaying) showPlayer(); 
+        }
+
+        function openTasbihApp() {
+            showView('tasbih');
+            hidePlayer(); 
+            tasbihCount = parseInt(localStorage.getItem('tasbihCount')) || 0;
+            updateTasbihDisplay();
+        }
+
+        function incrementTasbih() {
+            tasbihCount++;
+            localStorage.setItem('tasbihCount', tasbihCount);
+            updateTasbihDisplay();
+            if (navigator.vibrate) navigator.vibrate(50);
+        }
+
+        function resetTasbih() {
+            tasbihCount = 0;
+            localStorage.setItem('tasbihCount', 0);
+            updateTasbihDisplay();
+        }
+
+        function updateTasbihDisplay() {
+            if(elements.tasbihCountDisplay()) elements.tasbihCountDisplay().textContent = tasbihCount;
+        }
+
+        // --- Prayer Guide Logic ---
+        function openPrayerGuide() {
+            showView('prayer');
+            hidePlayer();
+            updatePrayerGuideUI();
+        }
+
+        function updatePrayerGuideUI() {
+            const grid = elements.prayerGuideGrid();
+            if (!grid) return;
+            grid.innerHTML = '';
+            
+            const icons = { fajr: 'fa-cloud-sun text-cyan-400', dhuhr: 'fa-sun text-amber-400', asr: 'fa-sun text-orange-400', maghrib: 'fa-cloud-moon text-indigo-400', isha: 'fa-moon text-purple-400' };
+
+            prayerGuideData.forEach(key => {
+                const title = i18n[currentLang][`p_${key}`];
+                const fardText = i18n[currentLang][`p_${key}_f`];
+                const nafText = i18n[currentLang][`p_${key}_n`];
+                
+                const card = document.createElement('div');
+                card.className = 'bg-slate-900/60 p-6 rounded-3xl border border-slate-700/50 shadow-lg flex flex-col relative overflow-hidden group hover:border-cyan-500/30 transition-all backdrop-blur-md';
+                card.innerHTML = `
+                    <div class="absolute -right-4 -top-4 text-slate-800 text-8xl opacity-20 group-hover:scale-110 transition-transform"><i class="fa-solid ${icons[key].split(' ')[0]}"></i></div>
+                    <div class="flex items-center gap-4 mb-6 relative z-10 border-b border-slate-700/50 pb-4">
+                        <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center shadow-inner"><i class="fa-solid ${icons[key]} text-xl"></i></div>
+                        <h3 class="text-2xl font-bold text-slate-200 ${currentLang === 'ar' ? 'font-sans-ar' : 'font-sans'}">${title}</h3>
+                    </div>
+                    
+                    <div class="space-y-4 relative z-10">
+                        <div class="bg-slate-800/80 p-4 rounded-2xl border-l-4 border-l-cyan-500">
+                            <div class="text-xs text-cyan-400 font-bold uppercase tracking-widest mb-1 ${currentLang === 'ar' ? 'font-sans-ar' : 'font-sans'}">${i18n[currentLang].fardText}</div>
+                            <div class="text-lg text-slate-200 ${currentLang === 'ar' ? 'font-sans-ar' : 'font-sans'}">${fardText}</div>
+                        </div>
+                        <div class="bg-slate-800/80 p-4 rounded-2xl border-l-4 border-l-slate-500">
+                            <div class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1 ${currentLang === 'ar' ? 'font-sans-ar' : 'font-sans'}">${i18n[currentLang].nafilahText}</div>
+                            <div class="text-lg text-slate-300 ${currentLang === 'ar' ? 'font-sans-ar' : 'font-sans'}">${nafText}</div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        // --- Qadha Tracker Logic ---
+        function initQadha() {
+            const saved = localStorage.getItem('qadhaStats');
+            if (saved) qadhaStats = JSON.parse(saved);
+        }
+        
+        function openQadhaApp() {
+            showView('qadha');
+            hidePlayer();
+            updateQadhaUI();
+        }
+
+        function updateQadha(type, amount) {
+            qadhaStats[type] = Math.max(0, qadhaStats[type] + amount);
+            localStorage.setItem('qadhaStats', JSON.stringify(qadhaStats));
+            updateQadhaUI();
+            if (navigator.vibrate) navigator.vibrate(30);
+        }
+
+        function resetAllQadha() {
+            if (confirm(currentLang === 'ar' ? 'هل أنت متأكد من تصفير السجل بالكامل؟' : 'Are you sure you want to reset the entire tracker?')) {
+                qadhaStats = { fajr: 0, dhuhr: 0, asr: 0, maghrib: 0, isha: 0, fast: 0 };
+                localStorage.setItem('qadhaStats', JSON.stringify(qadhaStats));
+                updateQadhaUI();
+                showToast(i18n[currentLang].toastSaved, 'fa-check');
+            }
+        }
+
+        function updateQadhaUI() {
+            const grid = elements.qadhaGrid();
+            if (!grid) return;
+            grid.innerHTML = '';
+            
+            const icons = { fajr: 'fa-cloud-sun', dhuhr: 'fa-sun', asr: 'fa-sun text-amber-500', maghrib: 'fa-cloud-moon', isha: 'fa-moon', fast: 'fa-utensils text-emerald-500' };
+
+            qadhaKeys.forEach(key => {
+                const label = i18n[currentLang][`q_${key}`];
+                const count = qadhaStats[key];
+                
+                const card = document.createElement('div');
+                card.className = 'bg-slate-900/60 p-6 rounded-3xl border border-slate-700/50 shadow-lg flex flex-col items-center gap-4 relative overflow-hidden group hover:border-emerald-500/30 transition-all';
+                card.innerHTML = `
+                    <div class="absolute -right-4 -top-4 text-slate-800 text-7xl opacity-30 group-hover:scale-110 transition-transform"><i class="fa-solid ${icons[key]}"></i></div>
+                    <h3 class="text-xl font-bold text-slate-200 z-10 ${currentLang === 'ar' ? 'font-sans-ar' : 'font-sans'}">${label}</h3>
+                    <div class="text-5xl font-black text-emerald-400 font-sans tabular-nums my-2 drop-shadow-md z-10">${count}</div>
+                    <div class="flex gap-3 w-full z-10">
+                        <button onclick="updateQadha('${key}', -1)" class="flex-1 bg-slate-800 hover:bg-rose-900/50 text-rose-400 hover:text-rose-200 py-3 rounded-xl transition-colors border border-slate-700 hover:border-rose-500 shadow-inner outline-none"><i class="fa-solid fa-minus"></i></button>
+                        <button onclick="updateQadha('${key}', 1)" class="flex-1 bg-slate-800 hover:bg-emerald-900/50 text-emerald-400 hover:text-emerald-200 py-3 rounded-xl transition-colors border border-slate-700 hover:border-emerald-500 shadow-inner outline-none"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- New Services Logic ---
+        async function loadAsmaAlHusna() {
+            showView('asma');
+            hidePlayer();
+            const asmaTitle = document.getElementById('asmaTitle');
+            if(asmaTitle) asmaTitle.textContent = i18n[currentLang].asmaTitle;
+            if (elements.asmaGrid() && elements.asmaGrid().innerHTML !== '') return; 
+            toggleLoading(true);
+            try {
+                const res = await fetch('https://api.aladhan.com/v1/asmaAlHusna');
+                const data = await res.json();
+                if (data.code === 200) {
+                    let html = '';
+                    data.data.forEach(name => {
+                        html += `<div class="bg-slate-900/60 border border-purple-800/30 p-5 rounded-3xl text-center hover:bg-slate-800 hover:border-purple-500/50 transition-all shadow-lg flex flex-col justify-center min-h-[140px] group relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-transparent pointer-events-none"></div>
+                            <div class="text-4xl font-arabic text-purple-400 mb-3 group-hover:scale-110 transition-transform drop-shadow-sm">${name.name}</div>
+                            <div class="text-sm text-slate-300 font-bold font-sans tracking-widest uppercase">${name.transliteration}</div>
+                            <div class="text-xs text-slate-400 mt-3 leading-relaxed hidden md:block">${name.en.meaning}</div>
+                        </div>`;
+                    });
+                    if(elements.asmaGrid()) elements.asmaGrid().innerHTML = html;
+                }
+            } catch(e) {
+                if(elements.asmaGrid()) elements.asmaGrid().innerHTML = `<div class="col-span-full text-rose-500 text-center font-bold p-8">Failed to load from API. Please check your connection.</div>`;
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        function openTasbihZahraApp() {
+            showView('tz');
+            hidePlayer();
+            const tzMainTitle = document.getElementById('tzMainTitle');
+            const tzResetText = document.getElementById('tzResetText');
+            if(tzMainTitle) tzMainTitle.textContent = i18n[currentLang].tzMainTitle;
+            if(tzResetText) tzResetText.textContent = i18n[currentLang].tzResetText;
+            resetTz();
+        }
+
+        function incrementTz() {
+            if (tzPhase >= 3) return;
+            tzCountLocal++;
+            
+            if (tzCountLocal > tzLimits[tzPhase]) {
+                tzPhase++;
+                tzCountLocal = 1;
+            }
+            
+            if (tzPhase >= 3) {
+                tzCountLocal = 0;
+                showToast(i18n[currentLang].tzComplete, 'fa-check-double');
+                if(elements.tzPhaseBox()) elements.tzPhaseBox().classList.replace('border-slate-700', 'border-emerald-500');
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            } else {
+                if (navigator.vibrate) navigator.vibrate(30);
+            }
+            updateTzDisplay();
+        }
+
+        function resetTz() {
+            tzPhase = 0;
+            tzCountLocal = 0;
+            if(elements.tzPhaseBox()) elements.tzPhaseBox().classList.replace('border-emerald-500', 'border-slate-700');
+            updateTzDisplay();
+        }
+
+        function updateTzDisplay() {
+            if(elements.tzPhaseText()) elements.tzPhaseText().textContent = currentLang === 'ar' ? tzPhasesAr[Math.min(tzPhase, 3)] : tzPhasesEn[Math.min(tzPhase, 3)];
+            if(elements.tzCountDisplay()) {
+                if (tzPhase < 3) {
+                    elements.tzCountDisplay().innerHTML = `${tzCountLocal} <span class="text-4xl text-slate-500 font-medium">/ ${tzLimits[tzPhase]}</span>`;
+                } else {
+                    elements.tzCountDisplay().innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i>`;
+                }
+            }
+        }
+
+        function openDuasApp() {
+            showView('duas');
+            hidePlayer();
+            const duasTitle = document.getElementById('duasTitle');
+            const duaFarajTitle = document.getElementById('duaFarajTitle');
+            const ziyaratAshuraTitle = document.getElementById('ziyaratAshuraTitle');
+            
+            if(duasTitle) duasTitle.textContent = i18n[currentLang].duasTitle;
+            if(duaFarajTitle) duaFarajTitle.textContent = i18n[currentLang].duaFarajTitle;
+            if(ziyaratAshuraTitle) ziyaratAshuraTitle.textContent = i18n[currentLang].ziyaratAshuraTitle;
+        }
+
+        // --- Karbala Logic ---
+        function renderKarbalaStory() {
+            const data = karbalaStoryData[currentLang];
+            const kArea = elements.karbalaArea();
+            const kMainTitle = elements.karbalaMainTitle();
+            const kContent = elements.karbalaContent();
+            
+            if(!kArea || !kMainTitle || !kContent) return;
+
+            kArea.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            
+            kMainTitle.textContent = data[0].title;
+            kMainTitle.className = `text-4xl md:text-5xl font-bold text-red-500 leading-tight drop-shadow-md ${currentLang === 'ar' ? 'font-arabic' : 'font-sans'}`;
+            
+            let html = `
+                <div class="bg-slate-900/80 p-6 md:p-10 rounded-3xl border border-red-900/30 shadow-inner mb-10">
+                    <p class="${currentLang === 'ar' ? 'font-arabic text-justify text-2xl md:text-3xl leading-relaxed text-red-100' : 'font-sans text-left text-xl md:text-2xl leading-relaxed text-red-100'}">${data[0].content}</p>
+                </div>
+                <div class="space-y-8">
+            `;
+            
+            for(let i=1; i<data.length; i++) {
+                html += `
+                    <div class="bg-slate-900/60 p-6 md:p-10 rounded-3xl border border-slate-700/50 hover:border-red-900/50 transition-colors shadow-lg backdrop-blur-sm relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-red-900/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <h3 class="text-2xl md:text-3xl font-bold text-red-400 mb-5 relative z-10 ${currentLang === 'ar' ? 'font-arabic' : 'font-sans'}"><i class="fa-solid fa-leaf text-red-900/50 mx-2 text-lg"></i> ${data[i].title}</h3>
+                        <p class="relative z-10 ${currentLang === 'ar' ? 'font-arabic text-justify text-xl md:text-2xl' : 'font-sans text-left text-lg md:text-xl'} text-slate-300 leading-loose">${data[i].content}</p>
+                    </div>`;
+            }
+            html += `</div>`;
+            kContent.innerHTML = html;
+        }
+
+        function openKarbalaStory() {
+            showView('karbala');
+            hidePlayer();
+            renderKarbalaStory();
+            if(elements.mainContent()) elements.mainContent().scrollTop = 0;
+        }
+
+        function showComingSoon() {
+            showToast(i18n[currentLang].comingSoon, 'fa-clock');
+        }
+
+        // --- Hide/Show Player Logic ---
+        let playerTouchStartY = 0;
+        const bPlayer = elements.bottomPlayer();
+        if(bPlayer) {
+            bPlayer.addEventListener('touchstart', e => playerTouchStartY = e.touches[0].clientY, {passive: true});
+            bPlayer.addEventListener('touchend', e => {
+                let playerTouchEndY = e.changedTouches[0].clientY;
+                if (playerTouchEndY > playerTouchStartY + 40) hidePlayer(); // Swipe down
+            });
+        }
+        function hidePlayer() {
+            if(elements.bottomPlayer()) {
+                elements.bottomPlayer().classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
+                elements.bottomPlayer().classList.remove('translate-y-0', 'opacity-100');
+            }
+            if(elements.restorePlayerBtn()) {
+                elements.restorePlayerBtn().classList.remove('translate-y-32', 'opacity-0', 'pointer-events-none'); 
+            }
+            if(elements.mainContent()) {
+                elements.mainContent().classList.remove('pb-36');
+                elements.mainContent().classList.add('pb-10');
+            }
+        }
+        function showPlayer() {
+            if(elements.bottomPlayer()) {
+                elements.bottomPlayer().classList.remove('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
+                elements.bottomPlayer().classList.add('translate-y-0', 'opacity-100');
+            }
+            if(elements.restorePlayerBtn()) {
+                elements.restorePlayerBtn().classList.add('translate-y-32', 'opacity-0', 'pointer-events-none'); 
+            }
+            if(elements.mainContent()) {
+                elements.mainContent().classList.add('pb-36');
+                elements.mainContent().classList.remove('pb-10');
+            }
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+                const fsIcon = document.getElementById('fsIcon');
+                if(fsIcon) fsIcon.className = "fa-solid fa-compress text-amber-500";
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                    const fsIcon = document.getElementById('fsIcon');
+                    if(fsIcon) fsIcon.className = "fa-solid fa-expand text-amber-500";
+                }
+            }
+        }
+
+        // --- Long Press & Context Menu Logic ---
+        let pressTimer;
+        let isLongPress = false;
+
+        function handleTouchStart(e) {
+            const ayahEl = e.target.closest('.ayah-wrapper');
+            if (!ayahEl) return;
+            isLongPress = false;
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                const index = parseInt(ayahEl.id.split('-')[1]);
+                showContextMenu(e, index, ayahEl);
+            }, 600);
+        }
+        function handleTouchEnd(e) {
+            clearTimeout(pressTimer);
+            if(isLongPress && e.cancelable) e.preventDefault();
+        }
+        function handleTouchMove() { clearTimeout(pressTimer); }
+
+        const qText = elements.quranText();
+        if(qText) {
+            qText.addEventListener('touchstart', handleTouchStart, {passive: true});
+            qText.addEventListener('touchend', handleTouchEnd);
+            qText.addEventListener('touchmove', handleTouchMove, {passive: true});
+            qText.addEventListener('mousedown', handleTouchStart);
+            qText.addEventListener('mouseup', handleTouchEnd);
+            qText.addEventListener('mousemove', handleTouchMove);
+            qText.addEventListener('contextmenu', e => {
+                const ayahEl = e.target.closest('.ayah-wrapper');
+                if (ayahEl) {
+                    e.preventDefault();
+                    clearTimeout(pressTimer);
+                    const index = parseInt(ayahEl.id.split('-')[1]);
+                    showContextMenu(e, index, ayahEl);
+                }
+            });
+        }
+
+        function showContextMenu(e, index, ayahEl) {
+            activeContextIndex = index;
+            const menu = document.getElementById('ayahContextMenu');
+            if(!menu) return;
+            
+            menu.classList.remove('hidden');
+            menu.classList.add('flex'); 
+            
+            let x = e.type.includes('touch') ? e.changedTouches[0].clientX : e.clientX;
+            let y = e.type.includes('touch') ? e.changedTouches[0].clientY : e.clientY;
+            
+            if (x + 350 > window.innerWidth) x = window.innerWidth - 350;
+            if (y + 160 > window.innerHeight) y = window.innerHeight - 180;
+            
+            menu.style.left = `${x}px`;
+            menu.style.top = `${y}px`;
+            
+            document.querySelectorAll('.ayah-wrapper').forEach(el => el.classList.remove('context-active'));
+            ayahEl.classList.add('context-active');
+            
+            if (navigator.vibrate) navigator.vibrate(40);
+        }
+
+        function closeContextMenu() {
+            const menu = document.getElementById('ayahContextMenu');
+            if(menu) {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+            }
+            document.querySelectorAll('.ayah-wrapper').forEach(el => el.classList.remove('context-active'));
+        }
+
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('ayahContextMenu');
+            if (menu && !menu.classList.contains('hidden') && !menu.contains(e.target)) {
+                closeContextMenu();
+            }
+        });
+
+        // --- Keyboard Shortcuts ---
+        document.addEventListener('keydown', (e) => {
+            // Ignore if typing in an input
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            
+            if (e.code === 'Space') {
+                e.preventDefault();
+                toggleAudio();
+            } else if (e.code === 'ArrowRight') {
+                e.preventDefault();
+                skipBackward(); // Left-to-right timeline: Right = Forward, but in Arabic we often conceptualize differently. 
+                               // For audio standard: Right arrow = +10s (Forward). Let's use standard media keys.
+                // Wait, skipping backward in standard LTR is Left. Let's make it standard: Right=Forward, Left=Backward.
+                skipForward(); 
+            } else if (e.code === 'ArrowLeft') {
+                e.preventDefault();
+                skipBackward();
+            }
+        });
+
+        function playContextAyah() {
+            closeContextMenu();
+            if(!isAudioReady) return;
+            showPlayer(); 
+            stopAudio();
+            playAyah(activeContextIndex);
+        }
+
+        function saveProgressContext() {
+            closeContextMenu();
+            const progress = {
+                surah: currentSurahData.ar.number,
+                ayah: activeContextIndex,
+                surahNameAr: currentSurahData.ar.name,
+                surahNameEn: currentSurahData.en.englishName
+            };
+            localStorage.setItem('quranProgress', JSON.stringify(progress));
+            showToast(i18n[currentLang].toastSaved, 'fa-circle-check');
+            checkSavedProgress(); 
+        }
+
+        function showToast(msg, iconClass = 'fa-circle-check') {
+            const toast = document.getElementById('toastMsg');
+            const toastText = document.getElementById('toastText');
+            const toastIcon = document.getElementById('toastIcon');
+            if(!toast || !toastText || !toastIcon) return;
+            
+            toastText.textContent = msg;
+            toastIcon.className = `fa-solid ${iconClass} text-amber-400 text-2xl`;
+            toast.classList.remove('opacity-0');
+            toast.classList.add('translate-y-4');
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                toast.classList.remove('translate-y-4');
+            }, 3000);
+        }
+
+        function checkSavedProgress() {
+            const saved = JSON.parse(localStorage.getItem('quranProgress'));
+            const bSection = elements.bookmarkSection();
+            const bSurahName = elements.bookmarkSurahName();
+            
+            if (saved) {
+                if(bSection) bSection.classList.remove('hidden');
+                if(bSurahName) bSurahName.textContent = currentLang === 'ar' ? `${saved.surahNameAr} - آية ${saved.ayah + 1}` : `${saved.surahNameEn} - Ayah ${saved.ayah + 1}`;
+            } else {
+                if(bSection) bSection.classList.add('hidden');
+            }
+        }
+
+        function loadSavedProgress() {
+            const saved = JSON.parse(localStorage.getItem('quranProgress'));
+            if (saved) {
+                if (window.innerWidth < 768 && currentPlatform !== 'laptop' && currentPlatform !== 'tv') toggleSidebar(); 
+                showView('reading');
+                loadSurah(saved.surah, saved.ayah);
+            }
+        }
+
+        function removeBookmark(e) {
+            e.stopPropagation(); 
+            localStorage.removeItem('quranProgress');
+            checkSavedProgress();
+            showToast(i18n[currentLang].toastRemoved, 'fa-trash');
+        }
+
+        // --- Welcome Screen & Setup ---
+        function selectPlatform(plat) {
+            currentPlatform = plat;
+            document.body.classList.remove('platform-mobile', 'platform-laptop', 'platform-tv');
+            document.body.classList.add(`platform-${plat}`);
+            
+            // Adjust specific behaviors based on platform
+            if (plat === 'laptop' || plat === 'tv') {
+                if(elements.sidebar()) elements.sidebar().classList.remove('translate-x-full'); // Show sidebar by default on large screens
+            }
+
+            document.getElementById('welcomeStepPlatform').classList.add('opacity-0', '-translate-y-8');
+            setTimeout(() => {
+                document.getElementById('welcomeStepPlatform').classList.add('hidden');
+                document.getElementById('welcomeStepLang').classList.remove('hidden');
+                setTimeout(() => document.getElementById('welcomeStepLang').classList.remove('opacity-0', 'translate-y-8'), 50);
+            }, 500);
+        }
+
+        function startApp(lang) {
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            if(welcomeScreen) welcomeScreen.classList.add('opacity-0', 'scale-110'); 
+            setTimeout(() => {
+                if(welcomeScreen) welcomeScreen.classList.add('hidden');
+                syncSelectsLang(lang);
+                changeLanguage(lang);
+            }, 700);
+        }
 
         function handlePlaybackError() {
             console.warn("Audio file skipped or failed");
@@ -257,8 +1484,11 @@
 
             if (consecutiveErrors > 3) {
                 stopAudio();
-                elements.playBtnText.textContent = currentLang === 'ar' ? 'التلاوة غير متوفرة' : 'Audio Unavailable';
-                elements.playIcon.className = "fa-solid fa-triangle-exclamation text-rose-400";
+                const aStatusText = elements.audioStatusText();
+                if(aStatusText) {
+                    aStatusText.textContent = currentLang === 'ar' ? "غير متوفر" : "Unavailable";
+                    aStatusText.classList.replace('text-slate-400', 'text-rose-500');
+                }
                 return;
             }
 
@@ -267,21 +1497,193 @@
             }, 400);
         }
 
+        // --- Audio Time formatting & Progress ---
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "00:00";
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+        }
+
+        function seekAudio(e) {
+            const container = elements.progressBarContainer ? elements.progressBarContainer() : document.getElementById('progressBarContainer');
+            if(!container || !audioPlayer.duration) return;
+            const rect = container.getBoundingClientRect();
+            // Using LTR visual alignment
+            const x = e.clientX - rect.left;
+            const percent = Math.max(0, Math.min(1, x / rect.width));
+            audioPlayer.currentTime = percent * audioPlayer.duration;
+        }
+
+        window.onload = () => {
+            const savedReciter = localStorage.getItem('quranReciter') || 'ar.alafasy';
+            currentReciter = savedReciter;
+            syncSelectsReciter(savedReciter);
+            
+            initQadha(); // Initialize Qadha Tracker
+            setRandomHadith(); // Init daily hadith
+            
+            audioPlayer.addEventListener('ended', playNextAyah);
+            audioPlayer.addEventListener('error', handlePlaybackError);
+            
+            // Audio Progress Logic
+            audioPlayer.addEventListener('timeupdate', () => {
+                const progress = elements.audioProgressBar ? elements.audioProgressBar() : document.getElementById('audioProgressBar');
+                const cTime = elements.currentTimeDisplay ? elements.currentTimeDisplay() : document.getElementById('currentTimeDisplay');
+                if(audioPlayer.duration && progress && cTime) {
+                    const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                    progress.style.width = `${percent}%`;
+                    cTime.textContent = formatTime(audioPlayer.currentTime);
+                }
+            });
+
+            audioPlayer.addEventListener('loadedmetadata', () => {
+                const tTime = elements.totalTimeDisplay ? elements.totalTimeDisplay() : document.getElementById('totalTimeDisplay');
+                if(tTime && audioPlayer.duration) {
+                    tTime.textContent = formatTime(audioPlayer.duration);
+                }
+            });
+            
+            const vSlider = elements.volumeSlider();
+            if(vSlider) {
+                audioPlayer.volume = parseFloat(vSlider.value);
+                vSlider.addEventListener('input', (e) => {
+                    const vol = parseFloat(e.target.value);
+                    audioPlayer.volume = vol;
+                    if(vol > 0) isMuted = false;
+                    updateVolumeIcon(vol);
+                });
+            }
+            
+            checkSavedProgress();
+        };
+
+        // --- UI Sync ---
+        function syncSelectsLang(val) { 
+            if(elements.langSelectDesktop()) elements.langSelectDesktop().value = val; 
+            if(elements.langSelectMobile()) elements.langSelectMobile().value = val; 
+        }
+        function syncSelectsReciter(val) { 
+            if(elements.reciterSelectDesktop()) elements.reciterSelectDesktop().value = val; 
+            if(elements.reciterSelectMobile()) elements.reciterSelectMobile().value = val; 
+        }
+
+        // --- Audio Player Controls ---
+        function updateVolumeIcon(vol) {
+            const vIcon = elements.volumeIcon();
+            if(!vIcon) return;
+            if (vol === 0 || isMuted) vIcon.className = "fa-solid fa-volume-xmark text-amber-500 w-8 text-center text-xl md:text-2xl transition-transform group-hover:scale-110";
+            else if (vol < 0.5) vIcon.className = "fa-solid fa-volume-low text-amber-500 w-8 text-center text-xl md:text-2xl transition-transform group-hover:scale-110";
+            else vIcon.className = "fa-solid fa-volume-high text-amber-500 w-8 text-center text-xl md:text-2xl transition-transform group-hover:scale-110";
+        }
+
+        function toggleMute() {
+            const vSlider = elements.volumeSlider();
+            if(!vSlider) return;
+            
+            if (isMuted) {
+                isMuted = false;
+                vSlider.value = previousVolume > 0 ? previousVolume : 1;
+                audioPlayer.volume = parseFloat(vSlider.value);
+            } else {
+                isMuted = true;
+                previousVolume = parseFloat(vSlider.value);
+                vSlider.value = 0;
+                audioPlayer.volume = 0;
+            }
+            updateVolumeIcon(audioPlayer.volume);
+        }
+
+        function skipForward() {
+            if(!isAudioReady || audioList.length === 0) return;
+            if (audioPlayer.duration && audioPlayer.currentTime + 10 >= audioPlayer.duration) playNextAyah();
+            else audioPlayer.currentTime += 10;
+        }
+
+        function skipBackward() {
+            if(!isAudioReady || audioList.length === 0) return;
+            audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 10);
+        }
+
         function changeLanguage(lang) {
             currentLang = lang; localStorage.setItem('quranLang', lang);
             document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
             document.documentElement.lang = lang;
+            syncSelectsLang(lang);
             
-            elements.appTitle.textContent = i18n[lang].title;
-            elements.searchInput.placeholder = i18n[lang].searchPlaceholder;
-            elements.indexTitle.textContent = i18n[lang].indexTitle;
-            elements.loadingText.textContent = i18n[lang].loading;
-            elements.stopBtnText.textContent = i18n[lang].stop; elements.closeSearchText.textContent = i18n[lang].closeSearch;
+            // Protected assignments
+            if(elements.appTitle()) elements.appTitle().textContent = i18n[lang].title;
+            if(elements.searchInput()) elements.searchInput().placeholder = i18n[lang].searchPlaceholder;
+            if(elements.indexTitle()) elements.indexTitle().textContent = i18n[lang].indexTitle;
+            if(elements.loadingText()) elements.loadingText().textContent = i18n[lang].loading;
+            if(elements.closeSearchText()) elements.closeSearchText().textContent = i18n[lang].closeSearch;
             
-            elements.reciterSelect.options[0].text = i18n[lang].reciterAlafasy; 
-            elements.reciterSelect.options[1].text = i18n[lang].reciterAbdulbasit;
-            elements.reciterSelect.options[2].text = i18n[lang].reciterAbdulbasitMurattal;
-            elements.reciterSelect.options[3].text = i18n[lang].reciterHusary;
+            if(elements.ctxSaveText()) elements.ctxSaveText().textContent = i18n[lang].ctxSave;
+            if(elements.ctxPlayText()) elements.ctxPlayText().textContent = i18n[lang].ctxPlay;
+            if(elements.ctxTitle()) elements.ctxTitle().textContent = i18n[lang].ctxTitle;
+            if(elements.bookmarkActionText()) elements.bookmarkActionText().textContent = i18n[lang].continueReading;
+            if(elements.bookmarkTitleText()) elements.bookmarkTitleText().innerHTML = `<i class="fa-solid fa-bookmark text-amber-600"></i> ${i18n[lang].bookmarkTitle}`;
+            
+            if(elements.servicesTextDesktop()) elements.servicesTextDesktop().textContent = i18n[lang].servicesBtn;
+            if(elements.servicesTextMobile()) elements.servicesTextMobile().textContent = i18n[lang].servicesBtn;
+            if(elements.servicesTitle()) elements.servicesTitle().textContent = i18n[lang].servicesTitle;
+            if(elements.servicesSubtitle()) elements.servicesSubtitle().textContent = i18n[lang].servicesSubtitle;
+            
+            if(elements.dailyWisdomTitle()) elements.dailyWisdomTitle().textContent = i18n[lang].dailyWisdom;
+            
+            if(elements.lbl_islamBasics()) elements.lbl_islamBasics().textContent = i18n[lang].lbl_islamBasics;
+            if(elements.lbl_prayerGuide()) elements.lbl_prayerGuide().textContent = i18n[lang].lbl_prayerGuide;
+            if(elements.lbl_dua()) elements.lbl_dua().textContent = i18n[lang].lbl_dua;
+            if(elements.lbl_99names()) elements.lbl_99names().textContent = i18n[lang].lbl_99names;
+            if(elements.lbl_tasbihZahra()) elements.lbl_tasbihZahra().textContent = i18n[lang].lbl_tasbihZahra;
+            if(elements.lbl_tasbihCounter()) elements.lbl_tasbihCounter().textContent = i18n[lang].lbl_tasbihCounter;
+            if(elements.lbl_qadhaTracker()) elements.lbl_qadhaTracker().textContent = i18n[lang].lbl_qadhaTracker;
+            if(elements.lbl_karbala()) elements.lbl_karbala().textContent = i18n[lang].lbl_karbala;
+            if(elements.tasbihTitle()) elements.tasbihTitle().textContent = i18n[lang].tasbihTitle;
+            if(elements.tasbihResetText()) elements.tasbihResetText().textContent = i18n[lang].tasbihReset;
+
+            const asmaTitle = document.getElementById('asmaTitle');
+            const duasTitle = document.getElementById('duasTitle');
+            const duaFarajTitle = document.getElementById('duaFarajTitle');
+            const ziyaratAshuraTitle = document.getElementById('ziyaratAshuraTitle');
+            const tzMainTitle = document.getElementById('tzMainTitle');
+            const tzResetText = document.getElementById('tzResetText');
+            
+            const qTitle = document.getElementById('qadhaTitle');
+            const qSub = document.getElementById('qadhaSubtitle');
+            const qResetAll = document.getElementById('qadhaResetAllText');
+            
+            const pTitle = document.getElementById('prayerGuideTitle');
+            const pSub = document.getElementById('prayerGuideSub');
+            
+            if(asmaTitle) asmaTitle.textContent = i18n[lang].asmaTitle;
+            if(duasTitle) duasTitle.textContent = i18n[lang].duasTitle;
+            if(duaFarajTitle) duaFarajTitle.textContent = i18n[lang].duaFarajTitle;
+            if(ziyaratAshuraTitle) ziyaratAshuraTitle.textContent = i18n[lang].ziyaratAshuraTitle;
+            if(tzMainTitle) tzMainTitle.textContent = i18n[lang].tzMainTitle;
+            if(tzResetText) tzResetText.textContent = i18n[lang].tzResetText;
+            updateTzDisplay();
+            
+            if(qTitle) qTitle.textContent = i18n[lang].qadhaTitle;
+            if(qSub) qSub.textContent = i18n[lang].qadhaSubtitle;
+            if(qResetAll) qResetAll.textContent = i18n[lang].qadhaResetAll;
+            updateQadhaUI();
+            
+            if(pTitle) pTitle.textContent = i18n[lang].prayerGuideTitle;
+            if(pSub) pSub.textContent = i18n[lang].prayerGuideSub;
+            updatePrayerGuideUI();
+
+            checkSavedProgress();
+            
+            if(elements.karbalaArea() && elements.karbalaArea().style.display === 'block') {
+                renderKarbalaStory();
+            }
+            
+            const reciterTexts = [i18n[lang].reciterAlafasy, i18n[lang].reciterAbdulbasit, i18n[lang].reciterAbdulbasitMurattal, i18n[lang].reciterHusary];
+            const rsDesktop = elements.reciterSelectDesktop();
+            const rsMobile = elements.reciterSelectMobile();
+            if(rsDesktop) for(let i=0; i<4; i++) rsDesktop.options[i].text = reciterTexts[i];
+            if(rsMobile) for(let i=0; i<4; i++) rsMobile.options[i].text = reciterTexts[i];
             
             updatePlayButtonUI();
             stopAudio();
@@ -292,10 +1694,9 @@
 
         function changeReciter(reciterId) {
             currentReciter = reciterId; localStorage.setItem('quranReciter', reciterId);
+            syncSelectsReciter(reciterId);
             stopAudio();
-            if (currentSurahData && currentSurahData.ar) {
-                buildAudioList();
-            }
+            if (currentSurahData && currentSurahData.ar) buildAudioList();
         }
 
         async function fetchSurahList() {
@@ -303,7 +1704,9 @@
                 const response = await fetch(`${API_BASE_URL}/meta`);
                 const data = await response.json();
                 if(data.code === 200) { surahsMetaData = data.data.surahs.references; renderSurahList(surahsMetaData); loadSurah(1); }
-            } catch (error) { elements.surahList.innerHTML = `<li class="text-rose-400 p-4 font-bold">Error loading index.</li>`; }
+            } catch (error) { 
+                if(elements.surahList()) elements.surahList().innerHTML = `<li class="text-rose-400 p-4 font-bold text-center mt-5">Error loading index. Please refresh.</li>`; 
+            }
         }
 
         function localizeNumber(num) {
@@ -312,13 +1715,18 @@
         }
 
         function renderSurahList(surahs) {
-            elements.surahList.innerHTML = '';
+            if(!elements.surahList()) return;
+            elements.surahList().innerHTML = '';
             surahs.forEach(surah => {
                 const li = document.createElement('li');
-                li.className = 'p-3 hover:bg-gray-700 cursor-pointer rounded-lg transition-colors flex justify-between items-center text-lg font-bold text-gray-200 mb-1 border border-transparent';
-                li.innerHTML = `<span class="font-arabic">${currentLang === 'ar' ? surah.name : surah.englishName}</span><span class="text-sm bg-cyan-700 text-white rounded-full w-8 h-8 flex items-center justify-center">${localizeNumber(surah.number)}</span>`;
-                li.onclick = () => { loadSurah(surah.number); if(window.innerWidth < 768) toggleSidebar(); };
-                elements.surahList.appendChild(li);
+                li.className = 'p-4 hover:bg-slate-800/80 cursor-pointer rounded-2xl transition-all flex justify-between items-center text-base md:text-lg font-bold text-slate-200 mb-2 border border-transparent hover:border-slate-700/80 font-sans-ar group hover:ps-5';
+                li.innerHTML = `<span>${currentLang === 'ar' ? surah.name : surah.englishName}</span><span class="text-sm bg-slate-900 border border-amber-900/50 text-amber-500 rounded-full w-10 h-10 flex items-center justify-center font-sans shadow-inner group-hover:bg-amber-500/10 transition-colors">${localizeNumber(surah.number)}</span>`;
+                li.onclick = () => { 
+                    loadSurah(surah.number); 
+                    // Hide sidebar automatically only on mobile
+                    if(window.innerWidth < 768 && currentPlatform !== 'laptop' && currentPlatform !== 'tv') toggleSidebar(); 
+                };
+                elements.surahList().appendChild(li);
             });
         }
 
@@ -328,14 +1736,28 @@
                 `${CDN_AUDIO_URL}/${currentReciter}/${ayah.number}.mp3`
             );
             isAudioReady = true;
-            elements.playBtn.classList.remove('btn-disabled');
+            if(elements.playBtn()) elements.playBtn().classList.remove('btn-disabled');
+            const aStatusText = elements.audioStatusText();
+            if(aStatusText) {
+                aStatusText.textContent = i18n[currentLang].ready;
+                aStatusText.classList.replace('text-rose-500', 'text-amber-500');
+                aStatusText.classList.replace('text-slate-400', 'text-amber-500');
+            }
             updatePlayButtonUI();
         }
 
-        async function loadSurah(surahNumber) {
-            toggleLoading(true); stopAudio(); closeSearch();
+        async function loadSurah(surahNumber, scrollToAyahIndex = null) {
+            showView('reading');
+            toggleLoading(true); stopAudio();
             isAudioReady = false; 
-            elements.playBtn.classList.add('btn-disabled');
+            if(elements.playBtn()) elements.playBtn().classList.add('btn-disabled');
+            
+            const aStatusText = elements.audioStatusText();
+            if(aStatusText) {
+                aStatusText.textContent = i18n[currentLang].audioLoading;
+                aStatusText.classList.replace('text-amber-500', 'text-slate-400');
+                aStatusText.classList.replace('text-rose-500', 'text-slate-400');
+            }
             audioList = [];
 
             try {
@@ -346,9 +1768,20 @@
                     currentSurahData = { ar: textData.data[0], en: textData.data[1] };
                     renderCurrentSurah();
                     buildAudioList();
+                    
+                    if (scrollToAyahIndex !== null) {
+                        setTimeout(() => {
+                            const targetAyah = document.getElementById(`ayah-${scrollToAyahIndex}`);
+                            if (targetAyah) {
+                                targetAyah.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                targetAyah.classList.add('playing-active'); 
+                                setTimeout(() => targetAyah.classList.remove('playing-active'), 3000);
+                            }
+                        }, 400); 
+                    }
                 }
             } catch (error) { 
-                elements.quranText.innerHTML = `<div class="p-4 bg-rose-900/50 text-rose-300 rounded-xl font-bold text-center border border-rose-800">${i18n[currentLang].errorLoading}</div>`;
+                if(elements.quranText()) elements.quranText().innerHTML = `<div class="p-8 bg-rose-900/30 text-rose-300 rounded-3xl font-bold text-center border border-rose-800/50 text-xl shadow-inner">${i18n[currentLang].errorLoading}</div>`;
             } finally { 
                 toggleLoading(false); 
             }
@@ -357,9 +1790,9 @@
         function renderCurrentSurah() {
             if(!currentSurahData) return;
             const arSurah = currentSurahData.ar, enSurah = currentSurahData.en;
-            elements.surahTitle.textContent = currentLang === 'ar' ? arSurah.name : enSurah.englishName;
-            elements.surahType.textContent = `${arSurah.revelationType === 'Meccan' ? i18n[currentLang].meccan : i18n[currentLang].medinan} - ${i18n[currentLang].ayahsCount} ${localizeNumber(arSurah.numberOfAyahs)}`;
-            elements.bismillah.style.display = (arSurah.number !== 1 && arSurah.number !== 9) ? 'block' : 'none';
+            if(elements.surahTitle()) elements.surahTitle().textContent = currentLang === 'ar' ? arSurah.name : enSurah.englishName;
+            if(elements.surahType()) elements.surahType().textContent = `${arSurah.revelationType === 'Meccan' ? i18n[currentLang].meccan : i18n[currentLang].medinan} - ${i18n[currentLang].ayahsCount} ${localizeNumber(arSurah.numberOfAyahs)}`;
+            if(elements.bismillah()) elements.bismillah().style.display = (arSurah.number !== 1 && arSurah.number !== 9) ? 'block' : 'none';
 
             let textHtml = '', lastPage = -1;
             for (let i = 0; i < arSurah.ayahs.length; i++) {
@@ -374,17 +1807,17 @@
                 if (arSurah.number !== 1 && i === 0) arText = arText.replace(/^بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ /, '');
 
                 if (currentLang === 'ar') {
-                    textHtml += `<span id="ayah-${i}" class="ayah-wrapper">${arText} <span class="ayah-number font-sans">${localizeNumber(i + 1)}</span></span> `;
+                    textHtml += `<span id="ayah-${i}" class="ayah-wrapper leading-[2.6] hover:bg-slate-800/50">${arText} <span class="ayah-number font-sans">${localizeNumber(i + 1)}</span></span> `;
                 } else {
                     textHtml += `
-                        <div id="ayah-${i}" class="ayah-wrapper p-6 mb-4 bg-gray-900/50 rounded-xl border border-gray-700">
-                            <div class="text-right mb-4 text-3xl font-arabic text-cyan-100" dir="rtl">${arText} <span class="ayah-number">${localizeNumber(i + 1)}</span></div>
-                            <div class="text-left text-xl text-gray-400 font-sans leading-relaxed" dir="ltr">${enSurah.ayahs[i].text}</div>
+                        <div id="ayah-${i}" class="ayah-wrapper p-6 md:p-8 mb-6 bg-slate-800/60 rounded-[2rem] border border-slate-700/50 shadow-md hover:border-amber-500/30 transition-colors">
+                            <div class="text-right mb-6 text-3xl md:text-4xl font-arabic text-slate-100 leading-loose" dir="rtl">${arText} <span class="ayah-number">${localizeNumber(i + 1)}</span></div>
+                            <div class="text-left text-xl md:text-2xl text-slate-400 font-sans leading-relaxed" dir="ltr">${enSurah.ayahs[i].text}</div>
                         </div>`;
                 }
             }
-            elements.quranText.innerHTML = textHtml;
-            document.getElementById('mainContent').scrollTop = 0;
+            if(elements.quranText()) elements.quranText().innerHTML = textHtml;
+            if(elements.mainContent()) elements.mainContent().scrollTop = 0;
         }
 
         function toggleAudio() {
@@ -395,7 +1828,7 @@
 
         function playAyah(index) {
             if (index >= audioList.length) { stopAudio(); return; }
-            
+
             audioPlayer.src = audioList[index];
             const p = audioPlayer.play();
             if (p !== undefined) {
@@ -412,6 +1845,7 @@
         }
         
         function playNextAyah() { playAyah(currentAudioIndex + 1); }
+        
         function stopAudio() { 
             audioPlayer.pause(); 
             audioPlayer.currentTime = 0; 
@@ -419,13 +1853,20 @@
             currentAudioIndex = 0; 
             consecutiveErrors = 0;
             clearTimeout(errorTimeout);
+            
+            // Reset Progress Bar
+            const progress = elements.audioProgressBar ? elements.audioProgressBar() : document.getElementById('audioProgressBar');
+            const cTime = elements.currentTimeDisplay ? elements.currentTimeDisplay() : document.getElementById('currentTimeDisplay');
+            if(progress) progress.style.width = `0%`;
+            if(cTime) cTime.textContent = "00:00";
+            
             updatePlayButtonUI(); 
             highlightAyah(-1); 
         }
         
         function updatePlayButtonUI() {
-            elements.playIcon.className = isPlaying ? "fa-solid fa-pause" : "fa-solid fa-play";
-            elements.playBtnText.textContent = isPlaying ? i18n[currentLang].pause : i18n[currentLang].play;
+            const pIcon = elements.playIcon();
+            if(pIcon) pIcon.className = isPlaying ? "fa-solid fa-pause text-2xl md:text-3xl ms-0 drop-shadow-sm" : "fa-solid fa-play text-2xl md:text-3xl ms-1 drop-shadow-sm";
         }
 
         function highlightAyah(index) {
@@ -445,40 +1886,76 @@
         }
 
         async function performSearch() {
-            const raw = elements.searchInput.value.trim(); if (!raw) return;
-            toggleLoading(true); elements.readingArea.style.display = 'none'; elements.searchResultsArea.style.display = 'block'; elements.searchResultsList.innerHTML = '';
-            elements.searchResultsTitle.innerHTML = `${i18n[currentLang].searchResultsFor}: "<span class="text-cyan-400">${raw}</span>"`;
+            const sInput = elements.searchInput();
+            if(!sInput) return;
+            
+            const raw = sInput.value.trim(); if (!raw) return;
+            showView('search');
+            toggleLoading(true); 
+            const sResultsList = elements.searchResultsList();
+            if(sResultsList) sResultsList.innerHTML = '';
+            
+            const sResultsTitle = elements.searchResultsTitle();
+            if(sResultsTitle) sResultsTitle.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> ${i18n[currentLang].searchResultsFor}: "<span class="text-amber-400">${raw}</span>"`;
+            
             try {
                 const norm = normalizeSearchText(raw);
                 const ms = surahsMetaData.filter(s => normalizeSearchText(s.name).includes(norm) || normalizeSearchText(s.englishName).includes(norm));
-                if (ms.length > 0) {
+                if (ms.length > 0 && sResultsList) {
                     ms.forEach(s => {
-                        const d = document.createElement('div'); d.className = 'bg-gray-800 p-6 rounded-xl shadow border-2 border-cyan-700 hover:bg-gray-700 cursor-pointer mb-4 flex justify-between items-center';
-                        d.innerHTML = `<div><div class="text-sm font-bold text-cyan-500 mb-2"><i class="fa-solid fa-star text-amber-400 mx-1"></i> ${i18n[currentLang].surahMatch}</div><div class="text-3xl font-bold font-arabic text-gray-100">${currentLang === 'ar' ? s.name : s.englishName}</div></div><button class="bg-cyan-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-cyan-500 transition-colors">${i18n[currentLang].openSurah}</button>`;
-                        d.onclick = () => { elements.searchInput.value = ''; loadSurah(s.number); };
-                        elements.searchResultsList.appendChild(d);
+                        const d = document.createElement('div'); d.className = 'bg-slate-900/60 p-6 md:p-8 rounded-[2rem] shadow-lg border border-slate-700/80 hover:border-amber-500/50 cursor-pointer mb-5 flex justify-between items-center transition-all hover:-translate-y-1 backdrop-blur-sm';
+                        d.innerHTML = `<div><div class="text-sm md:text-base font-bold text-amber-500/80 mb-2 font-sans-ar uppercase tracking-wider"><i class="fa-solid fa-star mx-1"></i> ${i18n[currentLang].surahMatch}</div><div class="text-3xl md:text-4xl font-bold font-arabic text-slate-100 mt-1">${currentLang === 'ar' ? s.name : s.englishName}</div></div><button class="bg-gradient-to-br from-amber-500 to-amber-600 text-slate-900 px-6 md:px-8 py-2 md:py-3.5 rounded-xl font-bold hover:shadow-[0_0_15px_rgba(251,191,36,0.4)] transition-all text-base md:text-lg shadow-md">${i18n[currentLang].openSurah}</button>`;
+                        d.onclick = () => { if(elements.searchInput()) elements.searchInput().value = ''; loadSurah(s.number); };
+                        sResultsList.appendChild(d);
                     });
                 }
                 const res = await fetch(`${API_BASE_URL}/search/${encodeURIComponent(raw)}/all/${currentLang === 'ar' ? 'ar.quran' : 'en.sahih'}`);
                 const data = await res.json();
-                if (data.code === 200 && data.data.count > 0) {
+                if (data.code === 200 && data.data.count > 0 && sResultsList) {
                     data.data.matches.forEach(m => {
-                        const d = document.createElement('div'); d.className = 'bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 hover:border-cyan-600 transition-colors cursor-pointer border-s-4 border-s-cyan-500 mt-4';
-                        d.innerHTML = `<div class="flex justify-between items-center mb-4 text-cyan-400 text-sm border-b border-gray-700 pb-3"><span class="font-bold flex items-center text-lg font-arabic"><i class="fa-solid fa-book-open mx-2"></i> ${currentLang === 'ar' ? m.surah.name : m.surah.englishName}</span><span class="bg-gray-900 border border-gray-700 px-3 py-1 rounded-full text-gray-300">${i18n[currentLang].ayahsCount} ${localizeNumber(m.numberInSurah)}</span></div><div class="${currentLang === 'ar' ? 'quran-text text-right' : 'text-xl text-left font-sans'} mt-2 text-gray-200">${m.text.replace(new RegExp(raw, 'gi'), `<span class="bg-cyan-900 text-cyan-100 px-1 rounded shadow-sm">$&</span>`)} <span class="ayah-number">${localizeNumber(m.numberInSurah)}</span></div>`;
-                        d.onclick = () => { elements.searchInput.value = ''; loadSurah(m.surah.number); };
-                        elements.searchResultsList.appendChild(d);
+                        const d = document.createElement('div'); d.className = 'bg-slate-900/50 p-6 md:p-8 rounded-[2.5rem] shadow-lg border border-slate-700 hover:border-amber-500/50 transition-all cursor-pointer border-s-[6px] border-s-amber-500 mt-6 hover:-translate-y-1 backdrop-blur-sm';
+                        d.innerHTML = `<div class="flex justify-between items-center mb-6 border-b border-slate-700/50 pb-5"><span class="font-bold flex items-center text-xl md:text-2xl font-arabic text-amber-400 drop-shadow-sm"><i class="fa-solid fa-book-open mx-3 text-amber-600/70"></i> ${currentLang === 'ar' ? m.surah.name : m.surah.englishName}</span><span class="bg-slate-950/80 border border-slate-700 px-4 py-2 rounded-full text-slate-300 text-sm font-sans-ar shadow-inner">${i18n[currentLang].ayahsCount} ${localizeNumber(m.numberInSurah)}</span></div><div class="${currentLang === 'ar' ? 'quran-text text-right' : 'text-xl md:text-2xl text-left font-sans'} mt-4 text-slate-200 leading-loose">${m.text.replace(new RegExp(raw, 'gi'), `<span class="bg-amber-900/50 text-amber-200 px-2 py-0.5 rounded-lg shadow-sm border border-amber-500/30">$&</span>`)} <span class="ayah-number">${localizeNumber(m.numberInSurah)}</span></div>`;
+                        d.onclick = () => { if(elements.searchInput()) elements.searchInput().value = ''; loadSurah(m.surah.number); };
+                        sResultsList.appendChild(d);
                     });
-                } else if (ms.length === 0) { elements.searchResultsList.innerHTML = `<div class="p-12 text-center text-gray-400 font-bold">${i18n[currentLang].noResults}</div>`; }
-            } catch (e) { elements.searchResultsList.innerHTML = `<div class="p-6 bg-rose-900/50 text-rose-300 rounded-xl border border-rose-800 text-center">${i18n[currentLang].errorLoading}</div>`; } finally { toggleLoading(false); }
+                } else if (ms.length === 0 && sResultsList) { sResultsList.innerHTML = `<div class="p-16 bg-slate-900/40 rounded-[2.5rem] border border-slate-700/50 text-center text-slate-400 font-bold text-xl"><i class="fa-solid fa-folder-open text-4xl mb-4 text-slate-600 block"></i>${i18n[currentLang].noResults}</div>`; }
+            } catch (e) { 
+                if(sResultsList) sResultsList.innerHTML = `<div class="p-8 bg-rose-900/30 text-rose-300 rounded-[2rem] border border-rose-800/50 text-center text-xl shadow-inner"><i class="fa-solid fa-triangle-exclamation text-3xl mb-3 block"></i>${i18n[currentLang].errorLoading}</div>`; 
+            } finally { 
+                toggleLoading(false); 
+            }
         }
 
-        function closeSearch() { elements.searchResultsArea.style.display = 'none'; elements.readingArea.style.display = 'block'; elements.searchInput.value = ''; }
-        function toggleLoading(s) { elements.loadingScreen.style.display = s ? 'flex' : 'none'; }
-        function toggleSidebar() {
-            if(elements.sidebar.classList.contains('hidden')) { elements.sidebar.classList.remove('hidden'); elements.sidebar.classList.add('fixed', 'inset-y-0', 'right-0', 'z-40', 'w-4/5', 'max-w-sm', 'shadow-2xl'); }
-            else { elements.sidebar.classList.add('hidden'); elements.sidebar.classList.remove('fixed', 'inset-y-0', 'right-0', 'z-40', 'w-4/5', 'max-w-sm', 'shadow-2xl'); }
+        function closeSearch() { 
+            showView('reading'); 
+            if(elements.searchInput()) elements.searchInput().value = ''; 
         }
-        elements.searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') performSearch(); });
+        function toggleLoading(s) { 
+            if(elements.loadingScreen()) elements.loadingScreen().style.display = s ? 'flex' : 'none'; 
+        }
+        
+        function toggleSidebar() {
+            const sidebar = elements.sidebar();
+            const overlay = elements.sidebarOverlay();
+            if(!sidebar || !overlay) return;
+            
+            const isHidden = sidebar.classList.contains('translate-x-full');
+
+            if (isHidden) {
+                sidebar.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            } else {
+                sidebar.classList.add('translate-x-full');
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+        
+        const sInputEvent = elements.searchInput();
+        if(sInputEvent) {
+            sInputEvent.addEventListener('keypress', e => { if (e.key === 'Enter') performSearch(); });
+        }
     </script>
 </body>
 </html>
